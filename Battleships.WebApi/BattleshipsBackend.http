@@ -1,6 +1,0 @@
-@BattleshipsBackend_HostAddress = http://localhost:5299
-
-GET {{BattleshipsBackend_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
