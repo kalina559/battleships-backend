@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleships.Services.Interfaces
+namespace Battleships.Core.Common
 {
-    public interface IShipLocationService
+    public class Position
     {
-        List<Ship> GenerateOpponentShips();
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 }

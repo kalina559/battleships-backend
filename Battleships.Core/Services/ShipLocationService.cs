@@ -1,11 +1,13 @@
-﻿using Battleships.Services.Interfaces;
+﻿using Battleships.Core.Common;
+using Battleships.Services;
+using Battleships.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleships.Services
+namespace Battleships.Core.Services
 {
     public class ShipLocationService : IShipLocationService
     {
