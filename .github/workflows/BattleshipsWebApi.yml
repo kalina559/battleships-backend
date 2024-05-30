@@ -1,14 +1,14 @@
-name: Build and deploy .NET Core application to Web App BattleshipsBackend
+name: Build and deploy .NET Core application to Web App BattleshipsWebApi
 on:
   push:
     branches:
     - master
 env:
-  AZURE_WEBAPP_NAME: BattleshipsBackend
-  AZURE_WEBAPP_PACKAGE_PATH: BattleshipsBackend\publish
+  AZURE_WEBAPP_NAME: BattleshipsWebApi
+  AZURE_WEBAPP_PACKAGE_PATH: Battleships.WebApi\publish
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
-  WORKING_DIRECTORY: BattleshipsBackend
+  WORKING_DIRECTORY: Battleships.WebApi
 jobs:
   build:
     runs-on: windows-latest
@@ -44,5 +44,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.BattleshipsBackend_EF53 }}
+        publish-profile: ${{ secrets.BattleshipsWebApi_DA96 }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
