@@ -4,51 +4,23 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService) : ControllerBase
+public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService, ILogger<ShotController> logger) : ControllerBase
 {
-
     [HttpPost("user")]
-    public ActionResult<ShotResult> UserShot([FromBody] Position position)
+    public IActionResult UserShot([FromBody] Shot shot)
     {
-        var gameState = gameStateService.GetGameState();
-        var isHit = gameState.OpponentShips.Any(ship => ship.Coordinates.Any(coord => coord.X == position.X && coord.Y == position.Y));
-
-        var shot = new Shot
-        {
-            X = position.X,
-            Y = position.Y,
-            IsHit = isHit
-        };
-
-        gameState.UserShots.Add(shot);
-        gameStateService.SaveGameState(gameState);
-
-        return Ok(new ShotResult { Position = position, IsHit = isHit });
+        var result = gameStateService.ProcessShot(shot.X, shot.Y, isPlayer: true);
+        var win = gameStateService.CheckWinCondition();
+        return Ok(new { result.IsHit, result.IsSunk, Win = win });
     }
 
-    [HttpGet("opponent")]
-    public ActionResult<ShotResult> OpponentShot()
+    [HttpPost("opponent")]
+    public IActionResult OpponentShot()
     {
-        var gameState = gameStateService.GetGameState();
-        var (x, y) = opponentMoveService.GenerateMove(gameState.UserShips.SelectMany(ship => ship.Coordinates).ToList(), gameState.OpponentShots);
-        var isHit = gameState.UserShips.Any(ship => ship.Coordinates.Any(coord => coord.X == x && coord.Y == y));
+        var shot = opponentMoveService.GenerateMove(gameStateService.GetGameState());
 
-        var shot = new Shot
-        {
-            X = x,
-            Y = y,
-            IsHit = isHit
-        };
-
-        gameState.OpponentShots.Add(shot);
-        gameStateService.SaveGameState(gameState);
-
-        return Ok(new ShotResult { Position = new Position { X = x, Y = y }, IsHit = isHit });
+        var result = gameStateService.ProcessShot(shot.X, shot.Y, isPlayer: false);
+        var win = gameStateService.CheckWinCondition();
+        return Ok(new { result.IsHit, result.IsSunk, Win = win });
     }
-}
-
-public class ShotResult
-{
-    public required Position Position { get; set; }
-    public bool IsHit { get; set; }
 }

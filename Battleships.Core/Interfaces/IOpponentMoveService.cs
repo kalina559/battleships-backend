@@ -9,6 +9,6 @@ namespace Battleships.Services.Interfaces
 {
     public interface IOpponentMoveService
     {
-        (int X, int Y) GenerateMove(List<Position> userGrid, List<Shot> previousShots);
+        (int X, int Y) GenerateMove(GameState gameState);
     }
 }

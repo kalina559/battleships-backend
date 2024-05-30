@@ -9,6 +9,7 @@ namespace Battleships.Core.Common
     public class Ship
     {
         public int Size { get; set; }
-        public List<Position> Coordinates { get; set; } = new List<Position>();
+        public List<Position> Coordinates { get; set; } = [];
+        public bool IsSunk { get; set; } = false;
     }
 }

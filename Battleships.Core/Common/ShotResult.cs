@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Battleships.Core.Common
 {
-    public class Position
+    public class ShotResult
     {
-        public int X { get; set; }
-        public int Y { get; set; }
         public bool IsHit { get; set; }
+        public bool IsSunk { get; set; }
     }
 }

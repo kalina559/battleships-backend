@@ -1,0 +1,22 @@
+﻿using Battleships.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+
+
+[ApiController]
+[Route("api/[controller]")]
+public class GameStateController(IGameStateService gameStateService) : Controller
+{
+    [HttpGet("get")]
+    public IActionResult GetGameState()
+    {
+        var gameState = gameStateService.GetGameState();
+        return Ok(gameState);
+    }
+
+    [HttpGet("clear")]
+    public IActionResult ClearGameState()
+    {
+        gameStateService.ClearGameState();
+        return Ok();
+    }
+}

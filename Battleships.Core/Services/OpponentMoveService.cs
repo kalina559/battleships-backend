@@ -12,7 +12,7 @@ namespace Battleships.Core.Services
     {
         private static readonly Random _random = new Random();
 
-        public (int X, int Y) GenerateMove(List<Position> userGrid, List<Shot> previousShots)
+        public (int X, int Y) GenerateMove(GameState gameState)
         {
             int x, y;
             bool isValidMove;
@@ -21,12 +21,8 @@ namespace Battleships.Core.Services
             {
                 x = _random.Next(10);
                 y = _random.Next(10);
-                isValidMove = !previousShots.Any(s => s.X == x && s.Y == y);
+                isValidMove = !gameState.OpponentShots.Any(s => s.X == x && s.Y == y);
             } while (!isValidMove);
-
-            bool isHit = userGrid.Any(pos => pos.X == x && pos.Y == y);
-
-            previousShots.Add(new Shot { X = x, Y = y, IsHit = isHit });
 
             return (x, y);
         }
