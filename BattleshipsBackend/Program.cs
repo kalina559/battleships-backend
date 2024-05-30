@@ -1,3 +1,6 @@
+using Battleships.Services.Interfaces;
+using Battleships.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +21,9 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+
+//TODO move to separate method
+builder.Services.AddScoped<IShipLocationService, ShipLocationService>();
 
 var app = builder.Build();
 
