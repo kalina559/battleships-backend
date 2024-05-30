@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("http://localhost:8080") // Your frontend URL
+            builder.WithOrigins("http://localhost:8080", "https://kalina559.github.io/battleship-game/") // Your frontend URL
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials(); // Allow credentials
