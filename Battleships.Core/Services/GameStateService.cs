@@ -1,55 +1,38 @@
 ﻿using Battleships.Core.Common;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-public class GameStateService : IGameStateService
+public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<GameStateService> logger, IMemoryCache memoryCache) : IGameStateService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<GameStateService> _logger;
-
-    public GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<GameStateService> logger)
-    {
-        _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
-    }
-
     public GameState GetGameState()
     {
-        var context = _httpContextAccessor.HttpContext;
-        if (context == null)
+        var sessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString();
+
+        if (!memoryCache.TryGetValue(sessionId, out string gameStateJson))
         {
-            _logger.LogWarning("HttpContext is null in GetGameState.");
+            logger.LogInformation("No game state found in cache for session ID: {sessionId}", sessionId);
             return new GameState();
         }
 
-        var session = context.Session;
-        var gameStateJson = session.GetString("GameState");
-        if (string.IsNullOrEmpty(gameStateJson))
-        {
-            _logger.LogInformation("No game state found in session.");
-            return new GameState();
-        }
-
-        _logger.LogInformation("Game state retrieved from session: {gameStateJson}", gameStateJson);
+        logger.LogInformation("Game state retrieved from cache for session ID: {sessionId}", sessionId);
         return JsonConvert.DeserializeObject<GameState>(gameStateJson);
     }
 
     public void SaveGameState(GameState gameState)
     {
-        var context = _httpContextAccessor.HttpContext;
-        if (context == null)
+        var sessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString();
+        if (string.IsNullOrEmpty(sessionId))
         {
-            _logger.LogWarning("HttpContext is null in SaveGameState.");
+            logger.LogWarning("Session ID is missing in the request headers.");
             return;
         }
 
-        var session = context.Session;
         var gameStateJson = JsonConvert.SerializeObject(gameState);
-        session.SetString("GameState", gameStateJson);
-
-        _logger.LogInformation("Game state saved to session: {gameStateJson}", gameStateJson);
+        memoryCache.Set(sessionId, gameStateJson);
+        logger.LogInformation("Game state saved in cache for session ID: {sessionId}", sessionId);
     }
 
     public ShotResult ProcessShot(int x, int y, bool isPlayer)
