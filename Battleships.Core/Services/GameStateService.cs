@@ -1,4 +1,5 @@
 ﻿using Battleships.Core.Common;
+using Battleships.Core.Enums;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,17 +14,17 @@ public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<
 
         if (!memoryCache.TryGetValue(sessionId, out string gameStateJson))
         {
-            logger.LogInformation("No game state found in cache for session ID: {sessionId}", sessionId);
+            logger.LogInformation($"No game state found in cache for session ID: {sessionId}");
             return new GameState();
         }
 
-        logger.LogInformation("Game state retrieved from cache for session ID: {sessionId}", sessionId);
+        logger.LogInformation($"Game state retrieved from cache for session ID: {sessionId}");
         return JsonConvert.DeserializeObject<GameState>(gameStateJson);
     }
 
     public void SaveGameState(GameState gameState)
     {
-        var sessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString();
+        var sessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString();     // TODO move the header name to some const or config
         if (string.IsNullOrEmpty(sessionId))
         {
             logger.LogWarning("Session ID is missing in the request headers.");
@@ -32,7 +33,7 @@ public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<
 
         var gameStateJson = JsonConvert.SerializeObject(gameState);
         memoryCache.Set(sessionId, gameStateJson);
-        logger.LogInformation("Game state saved in cache for session ID: {sessionId}", sessionId);
+        logger.LogInformation($"Game state saved in cache for session ID: {sessionId}");
     }
 
     public ShotResult ProcessShot(int x, int y, bool isPlayer)
@@ -81,5 +82,14 @@ public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<
             OpponentShots = new List<Shot>()
         };
         SaveGameState(gameState);
+    }
+
+    public void SelectAiType(AiType type)
+    {
+        var gameState = GetGameState();
+        gameState.AiType = type;
+        SaveGameState(gameState);
+
+        logger.LogInformation($"AiType updated to {type}");
     }
 }

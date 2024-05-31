@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Battleships.Core.Enums;
+using System.Collections.Generic;
 
 namespace Battleships.Core.Common
 {
@@ -8,5 +9,6 @@ namespace Battleships.Core.Common
         public List<Ship> OpponentShips { get; set; } = new List<Ship>();
         public List<Shot> PlayerShots { get; set; } = new List<Shot>();
         public List<Shot> OpponentShots { get; set; } = new List<Shot>();
+        public AiType AiType { get; set; }
     }
 }

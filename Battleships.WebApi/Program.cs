@@ -1,5 +1,4 @@
 using Battleships.Core.Services;
-using Battleships.Core;
 using Battleships.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +40,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IShipLocationService, ShipLocationService>();
 builder.Services.AddScoped<IOpponentMoveService, OpponentMoveService>();
 builder.Services.AddScoped<IGameStateService, GameStateService>();
+builder.Services.AddScoped<IAiTypeService, AiTypeService>();
 
 // Configure logging
 builder.Logging.ClearProviders();
