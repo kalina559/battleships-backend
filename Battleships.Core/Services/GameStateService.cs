@@ -1,5 +1,6 @@
 ﻿using Battleships.Core.Common;
 using Battleships.Core.Enums;
+using Battleships.Core.Exceptions;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,14 +15,16 @@ namespace Battleships.Core.Services
         {
             var sessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString();
 
-            if (!memoryCache.TryGetValue(sessionId, out string gameStateJson))
+            if (!memoryCache.TryGetValue(sessionId, out string? gameStateJson))
             {
                 logger.LogInformation("No game state found in cache for session ID: {sessionId}", sessionId);
                 return new GameState();
             }
 
+            var deserializedGameState = DeserializeGameStateJson(gameStateJson);
+
             logger.LogInformation("Game state retrieved from cache for session ID: {sessionId}", sessionId);
-            return JsonConvert.DeserializeObject<GameState>(gameStateJson);
+            return deserializedGameState;
         }
 
         public void SaveGameState(GameState gameState)
@@ -84,6 +87,18 @@ namespace Battleships.Core.Services
                 OpponentShots = []
             };
             SaveGameState(gameState);
+        }
+
+        private static GameState DeserializeGameStateJson(string? gameStateJson)
+        {
+            if (gameStateJson == null)
+            {
+                throw new NullGameStateException($"Game state JSON was found but was null.");
+            }
+
+            var gameState = JsonConvert.DeserializeObject<GameState>(gameStateJson);
+
+            return gameState ?? throw new NullGameStateException($"Game state JSON was found but was null after deserialization");
         }
     }
 }

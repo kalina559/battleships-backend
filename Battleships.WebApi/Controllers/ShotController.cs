@@ -6,7 +6,7 @@ namespace Battleships.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService, ILogger<ShotController> logger) : ControllerBase
+    public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService) : ControllerBase
     {
         [HttpPost("user")]
         public IActionResult UserShot([FromBody] Shot shot)
