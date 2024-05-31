@@ -1,29 +1,27 @@
-﻿using Battleships.Core.Common;
-using Battleships.Core.Enums;
+﻿using Battleships.Core.Enums;
 using Battleships.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
 
-public class AiTypeService(ILogger<AiTypeService> logger, IGameStateService gameStateService) : IAiTypeService
+namespace Battleships.Core.Services
 {
-    public List<AiType> GetAllTypes()
+    public class AiTypeService(ILogger<AiTypeService> logger, IGameStateService gameStateService) : IAiTypeService
     {
-        var enumValues = Enum.GetValues(typeof(AiType))
-                                 .Cast<AiType>()
-                                 .ToList();
+        public List<AiType> GetAllTypes()
+        {
+            var enumValues = Enum.GetValues(typeof(AiType))
+                                     .Cast<AiType>()
+                                     .ToList();
 
-        return enumValues;
-    }
+            return enumValues;
+        }
 
-    public void SelectAiType(AiType type)
-    {
-        var gameState = gameStateService.GetGameState();
-        gameState.AiType = type;
-        gameStateService.SaveGameState(gameState);
+        public void SelectAiType(AiType type)
+        {
+            var gameState = gameStateService.GetGameState();
+            gameState.AiType = type;
+            gameStateService.SaveGameState(gameState);
 
-        logger.LogInformation($"AiType updated to {type}");
+            logger.LogInformation("AiType updated to {type}.", type);
+        }
     }
 }

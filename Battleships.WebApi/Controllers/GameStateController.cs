@@ -3,22 +3,24 @@ using Battleships.Core.Enums;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-
-[ApiController]
-[Route("api/[controller]")]
-public class GameStateController(IGameStateService gameStateService) : Controller
+namespace Battleships.WebApi.Controllers
 {
-    [HttpGet("get")]
-    public IActionResult GetGameState()
+    [ApiController]
+    [Route("api/[controller]")]
+    public class GameStateController(IGameStateService gameStateService) : Controller
     {
-        var gameState = gameStateService.GetGameState();
-        return Ok(gameState);
-    }
+        [HttpGet("get")]
+        public IActionResult GetGameState()
+        {
+            var gameState = gameStateService.GetGameState();
+            return Ok(gameState);
+        }
 
-    [HttpGet("clear")]
-    public IActionResult ClearGameState()
-    {
-        gameStateService.ClearGameState();
-        return Ok();
+        [HttpGet("clear")]
+        public IActionResult ClearGameState()
+        {
+            gameStateService.ClearGameState();
+            return Ok();
+        }
     }
 }

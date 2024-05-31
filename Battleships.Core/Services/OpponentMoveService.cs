@@ -1,16 +1,11 @@
 ﻿using Battleships.Core.Common;
 using Battleships.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Battleships.Core.Services
 {
     public class OpponentMoveService : IOpponentMoveService
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         public (int X, int Y) GenerateMove(GameState gameState)
         {

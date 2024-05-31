@@ -1,5 +1,4 @@
-﻿using Battleships.Core.Common;
-using Battleships.Core.Enums;
+﻿using Battleships.Core.Enums;
 
 namespace Battleships.Services.Interfaces
 {

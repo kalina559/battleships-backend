@@ -2,25 +2,28 @@
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService, ILogger<ShotController> logger) : ControllerBase
+namespace Battleships.WebApi.Controllers
 {
-    [HttpPost("user")]
-    public IActionResult UserShot([FromBody] Shot shot)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService, ILogger<ShotController> logger) : ControllerBase
     {
-        var result = gameStateService.ProcessShot(shot.X, shot.Y, isPlayer: true);
-        var win = gameStateService.CheckWinCondition();
-        return Ok(new { result.IsHit, result.IsSunk, Win = win });
-    }
+        [HttpPost("user")]
+        public IActionResult UserShot([FromBody] Shot shot)
+        {
+            var result = gameStateService.ProcessShot(shot.X, shot.Y, isPlayer: true);
+            var win = gameStateService.CheckWinCondition();
+            return Ok(new { result.IsHit, result.IsSunk, Win = win });
+        }
 
-    [HttpPost("opponent")]
-    public IActionResult OpponentShot()
-    {
-        var shot = opponentMoveService.GenerateMove(gameStateService.GetGameState());
+        [HttpPost("opponent")]
+        public IActionResult OpponentShot()
+        {
+            var (X, Y) = opponentMoveService.GenerateMove(gameStateService.GetGameState());
 
-        var result = gameStateService.ProcessShot(shot.X, shot.Y, isPlayer: false);
-        var win = gameStateService.CheckWinCondition();
-        return Ok(new { result.IsHit, result.IsSunk, Win = win });
+            var result = gameStateService.ProcessShot(X, Y, isPlayer: false);
+            var win = gameStateService.CheckWinCondition();
+            return Ok(new { result.IsHit, result.IsSunk, Win = win });
+        }
     }
 }

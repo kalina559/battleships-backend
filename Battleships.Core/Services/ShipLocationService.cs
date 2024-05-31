@@ -1,27 +1,21 @@
 ﻿using Battleships.Core.Common;
-using Battleships.Services;
 using Battleships.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Battleships.Core.Services
 {
     public class ShipLocationService : IShipLocationService
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         public List<Ship> GenerateOpponentShips()
         {
             var ships = new List<Ship>
             {
-                new Ship { Size = 5 },
-                new Ship { Size = 4 },
-                new Ship { Size = 3 },
-                new Ship { Size = 2 },
-                new Ship { Size = 1 }
+                new() { Size = 5 },
+                new() { Size = 4 },
+                new() { Size = 3 },
+                new() { Size = 2 },
+                new() { Size = 1 }
             };
 
             var grid = new bool[10, 10];
@@ -34,7 +28,7 @@ namespace Battleships.Core.Services
             return ships;
         }
 
-        private void PlaceShip(Ship ship, bool[,] grid)
+        private static void PlaceShip(Ship ship, bool[,] grid)
         {
             bool placed = false;
 
@@ -75,7 +69,7 @@ namespace Battleships.Core.Services
             }
         }
 
-        private bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal)
+        private static bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal)
         {
             for (int i = 0; i < size; i++)
             {
@@ -90,7 +84,7 @@ namespace Battleships.Core.Services
             return true;
         }
 
-        private bool IsAdjacentOccupied(bool[,] grid, int x, int y)
+        private static bool IsAdjacentOccupied(bool[,] grid, int x, int y)
         {
             int[,] directions = {
         { -1, -1 }, { -1, 0 }, { -1, 1 },
@@ -111,7 +105,7 @@ namespace Battleships.Core.Services
             return false;
         }
 
-        private void MarkAdjacentCells(bool[,] grid, int x, int y)
+        private static void MarkAdjacentCells(bool[,] grid, int x, int y)
         {
             int[,] directions = {
                 {-1, -1}, {-1, 0}, {-1, 1},
