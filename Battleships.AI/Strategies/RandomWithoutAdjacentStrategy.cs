@@ -62,7 +62,7 @@ namespace Battleships.AI.Strategies
                     if (adjacentShot != null && adjacentShot.IsHit)
                     {
                         // Check if the hit cell is part of a sunk ship
-                        return gameState.OpponentShips.Any(ship =>
+                        return gameState.UserShips.Any(ship =>
                             ship.Coordinates.Any(coord => coord.X == adjX && coord.Y == adjY) &&
                             ship.IsSunk);
                     }

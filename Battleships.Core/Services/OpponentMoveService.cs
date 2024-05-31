@@ -15,6 +15,7 @@ namespace Battleships.Core.Services
             {
                 { AiType.Random, new RandomStrategy() },
                 { AiType.RandomWithoutAdjacent, new RandomWithoutAdjacentStrategy() },
+                { AiType.Heuristic, new HeuristicStrategy() }
             };
         }
 

@@ -9,6 +9,7 @@ namespace Battleships.Core.Enums
     public enum AiType
     {
         Random = 0,
-        RandomWithoutAdjacent = 1
+        RandomWithoutAdjacent = 1,
+        Heuristic = 2
     }
 }
