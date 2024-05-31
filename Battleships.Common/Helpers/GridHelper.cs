@@ -60,18 +60,65 @@ namespace Battleships.Common.Helpers
 
         public static bool IsVerticalNeighbourHit(GameState gameState, int x, int y)
         {
-            var first = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y);
-            var second = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y);
+            var up = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
+            var down = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
 
-            return first != null || second != null;
+            return up != null || down != null;
+        }
+
+        public static bool IsHorizontalNeighbourCluster(GameState gameState, int x, int y)
+        {
+            var firstLeft = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
+            var secondLeft = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 2 && s.IsHit);
+
+            var firstRight = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
+            var secondRight = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 2 && s.IsHit);
+
+
+            return (firstLeft != null && firstLeft != null) || (firstRight != null && secondRight != null);
+        }
+
+        public static bool IsVerticalNeighbourCluster(GameState gameState, int x, int y)
+        {
+            var firstUp = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
+            var secondUp = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 2 && s.Y == y && s.IsHit);
+
+            var firstDown = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
+            var secondDown = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 2 && s.Y == y && s.IsHit);
+
+            return (firstUp != null && secondUp != null) || (firstDown != null && secondDown != null);
         }
 
         public static bool IsHorizontalNeighbourHit(GameState gameState, int x, int y)
         {
-            var first = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1);
-            var second = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1);
+            var left = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
+            var right = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
 
-            return first != null || second != null;
+            return left != null || right != null;
+        }
+
+        public static void PrintProbabilityGrid(int[] probabilityMap, int rows, int columns)
+        {
+            int[,] grid = new int[rows, columns];
+
+            var mapElements = probabilityMap.Select((prob, index) => (prob, index)).ToList();
+
+            foreach (var (probability, index) in mapElements)
+            {
+
+                int y = index / 10;
+                int x = index % 10;
+                grid[y, x] = probability;
+            }
+
+            for (int y = 0; y < rows; y++)
+            {
+                for (int x = 0; x < columns; x++)
+                {
+                    Console.Write($"{grid[x, y],4}"); // Adjust spacing as needed
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

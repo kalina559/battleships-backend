@@ -34,11 +34,27 @@ namespace Battleships.AI.Strategies
             return new RandomStrategy().GenerateMove(gameState);
         }
 
-        private static double[] GenerateProbabilityMap(GameState gameState)
+        private static int[] GenerateProbabilityMap(GameState gameState)
         {
-            var probabilityMap = new double[100];
+            var probabilityMap = new int[100];
 
+            AdjustProbabilityForShipLocations(gameState, probabilityMap);
 
+            AdjustProbabilityForSingleHits(gameState, probabilityMap);
+
+            AdjustProbabilityForHitClusters(gameState, probabilityMap);
+
+            AdjustProbabilityForSunkShips(gameState, probabilityMap);
+
+            AdjustProbabilityForShotAtCells(gameState, probabilityMap);
+
+            GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10); // Assuming a 10x10 grid
+
+            return probabilityMap;
+        }
+
+        private static void AdjustProbabilityForShipLocations(GameState gameState, int[] probabilityMap)
+        {
             var remainingShipLengths = gameState.UserShips
                 .Where(ship => !ship.IsSunk)
                 .Select(ship => ship.Coordinates.Count)
@@ -46,6 +62,8 @@ namespace Battleships.AI.Strategies
 
             foreach (var length in remainingShipLengths)
             {
+
+            // TODO think about increasing weights for larger ships, as they have fewer possible locations
                 for (int x = 0; x < 10; x++)
                 {
                     for (int y = 0; y < 10; y++)
@@ -68,14 +86,6 @@ namespace Battleships.AI.Strategies
                     }
                 }
             }
-
-            AdjustProbabilityForHits(gameState, probabilityMap);
-
-            AdjustProbabilityForSunkShips(gameState, probabilityMap);
-
-            AdjustProbabilityForHitCells(gameState, probabilityMap);
-
-            return probabilityMap;
         }
 
         private static bool IsValidVerticalPosition(GameState gameState, int x, int y, int length)
@@ -84,8 +94,10 @@ namespace Battleships.AI.Strategies
 
             for (int i = 0; i < length; i++)
             {
-                if (!(GridHelper.IsCellEmpty(gameState, x + i, y)
-                    || ( GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && GridHelper.IsHorizontalNeighbourHit(gameState, x + i, y))                   
+                
+
+                if (!((GridHelper.IsCellEmpty(gameState, x + i, y) && !GridHelper.IsHorizontalNeighbourCluster(gameState, x + i, y))
+                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && !GridHelper.IsHorizontalNeighbourHit(gameState, x + i, y))                   
                     )) // check if cell is not hit yet OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit)
                 {
                     return false;
@@ -101,8 +113,8 @@ namespace Battleships.AI.Strategies
 
             for (int i = 0; i < length; i++)
             {
-                if (!(GridHelper.IsCellEmpty(gameState, x + i, y)
-                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && GridHelper.IsVerticalNeighbourHit(gameState, x + i, y))
+                if (!( (GridHelper.IsCellEmpty(gameState, x + i, y) && !GridHelper.IsVerticalNeighbourCluster(gameState, x + i, y))
+                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && !GridHelper.IsVerticalNeighbourHit(gameState, x + i, y))
                     ))   // check if cell is not hit yet OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit)
                 {
                     return false;
@@ -112,7 +124,7 @@ namespace Battleships.AI.Strategies
             return true;
         }
 
-        private static void AdjustProbabilityForHits(GameState gameState, double[] probabilityMap)
+        private static void AdjustProbabilityForSingleHits(GameState gameState, int[] probabilityMap)
         {
             foreach (var shot in gameState.OpponentShots)
             {
@@ -124,13 +136,15 @@ namespace Battleships.AI.Strategies
                     {
                         if (GridHelper.IsWithinBounds(cell.X, cell.Y) && GridHelper.IsCellAvailable(gameState, cell.X, cell.Y))
                         {
-                            probabilityMap[(cell.Y * 10) + cell.X] += 5; // Increase probability for adjacent cells
+                            probabilityMap[(cell.Y * 10) + cell.X] += 50;
                         }
                     }
                 }
             }
+        }
 
-            // Further increase probability for cells on each side of a line of consecutive hit cells
+        private static void AdjustProbabilityForHitClusters(GameState gameState, int[] probabilityMap)
+        {            
             var hitClusters = FindHitClusters(gameState);
             foreach (var cluster in hitClusters)
             {
@@ -191,14 +205,11 @@ namespace Battleships.AI.Strategies
                             {
                                 probabilityMap[(cell.Y + 1) * 10 + cell.X] = 0;
                             }
-                        }                        
+                        }
                     }
                 }
             }
-
-            // Set probability to 0 for cells adjacent to sunk ships
-            AdjustProbabilityForSunkShips(gameState, probabilityMap);
-        }   
+        }
 
         private static List<List<(int X, int Y)>> FindHitClusters(GameState gameState)
         {
@@ -252,7 +263,7 @@ namespace Battleships.AI.Strategies
         /// </summary>
         /// <param name="gameState"></param>
         /// <param name="probabilityMap"></param>
-        private static void AdjustProbabilityForSunkShips(GameState gameState, double[] probabilityMap)
+        private static void AdjustProbabilityForSunkShips(GameState gameState, int[] probabilityMap)
         {
             foreach (var ship in gameState.UserShips.Where(ship => ship.IsSunk))
             {
@@ -270,7 +281,7 @@ namespace Battleships.AI.Strategies
             }
         }
 
-        private static void AdjustProbabilityForHitCells(GameState gameState, double[] probabilityMap)
+        private static void AdjustProbabilityForShotAtCells(GameState gameState, int[] probabilityMap)
         {
             for (int x = 0; x < 10; x++)
             {
