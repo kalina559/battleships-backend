@@ -1,4 +1,4 @@
-﻿using Battleships.Core.Common;
+﻿using Battleships.Common.GameClasses;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

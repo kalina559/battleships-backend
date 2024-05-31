@@ -1,6 +1,4 @@
-﻿using Battleships.Core.Common;
-using Battleships.Core.Enums;
-using Battleships.Services.Interfaces;
+﻿using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleships.WebApi.Controllers

@@ -1,8 +1,8 @@
 ﻿using Battleships.Common.GameClasses;
 
-namespace Battleships.Services.Interfaces
+namespace Battleships.AI.Strategies
 {
-    public interface IOpponentMoveService
+    public interface IAiStrategy
     {
         (int X, int Y) GenerateMove(GameState gameState);
     }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Battleships.Core.Common;
+﻿using Battleships.Common.GameClasses;
 
 namespace Battleships.Services.Interfaces
 {

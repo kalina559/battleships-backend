@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Battleships.Core.Exceptions
+﻿namespace Battleships.Core.Exceptions
 {
     public class NullGameStateException : Exception
     {

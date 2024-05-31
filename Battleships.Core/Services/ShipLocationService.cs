@@ -1,4 +1,4 @@
-﻿using Battleships.Core.Common;
+﻿using Battleships.Common.GameClasses;
 using Battleships.Services.Interfaces;
 
 namespace Battleships.Core.Services
@@ -47,7 +47,7 @@ namespace Battleships.Core.Services
                         {
                             grid[startX + i, startY] = true;
                             MarkAdjacentCells(grid, startX + i, startY);
-                            ship.Coordinates.Add(new Position { X = startX + i, Y = startY });
+                            ship.Coordinates.Add(new Coordinate { X = startX + i, Y = startY });
                         }
                         placed = true;
                     }
@@ -61,7 +61,7 @@ namespace Battleships.Core.Services
                         {
                             grid[startX, startY + i] = true;
                             MarkAdjacentCells(grid, startX, startY + i);
-                            ship.Coordinates.Add(new Position { X = startX, Y = startY + i });
+                            ship.Coordinates.Add(new Coordinate { X = startX, Y = startY + i });
                         }
                         placed = true;
                     }

@@ -1,7 +1,7 @@
 ﻿using Battleships.Core.Enums;
 using System.Collections.Generic;
 
-namespace Battleships.Core.Common
+namespace Battleships.Common.GameClasses
 {
     public class GameState
     {

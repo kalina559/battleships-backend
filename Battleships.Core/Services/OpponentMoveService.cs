@@ -1,25 +1,31 @@
-﻿using Battleships.Core.Common;
+﻿using Battleships.AI.Strategies;
+using Battleships.Common.GameClasses;
+using Battleships.Core.Enums;
 using Battleships.Services.Interfaces;
 
 namespace Battleships.Core.Services
 {
     public class OpponentMoveService : IOpponentMoveService
     {
-        private static readonly Random _random = new();
+        private readonly Dictionary<AiType, IAiStrategy> _strategies;
+
+        public OpponentMoveService()
+        {
+            _strategies = new Dictionary<AiType, IAiStrategy>
+            {
+                { AiType.Random, new RandomStrategy() },
+                { AiType.RandomWithoutAdjacent, new RandomWithoutAdjacentStrategy() },
+            };
+        }
 
         public (int X, int Y) GenerateMove(GameState gameState)
         {
-            int x, y;
-            bool isValidMove;
-
-            do
+            if (!_strategies.TryGetValue(gameState.AiType, out var strategy))
             {
-                x = _random.Next(10);
-                y = _random.Next(10);
-                isValidMove = !gameState.OpponentShots.Any(s => s.X == x && s.Y == y);
-            } while (!isValidMove);
+                throw new ArgumentException($"Strategy for AI type {gameState.AiType} not found.");
+            }
 
-            return (x, y);
+            return strategy.GenerateMove(gameState);
         }
     }
 }

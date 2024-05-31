@@ -1,4 +1,4 @@
-﻿namespace Battleships.Core.Common
+﻿namespace Battleships.Common.GameClasses
 {
     public class ShotResult
     {

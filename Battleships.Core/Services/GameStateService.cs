@@ -1,5 +1,4 @@
-﻿using Battleships.Core.Common;
-using Battleships.Core.Enums;
+﻿using Battleships.Common.GameClasses;
 using Battleships.Core.Exceptions;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
