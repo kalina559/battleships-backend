@@ -7,6 +7,9 @@ namespace Battleships.AI.Strategies
     {
         private static readonly Random _random = new();
 
+        private readonly static int POSSIBLE_SHIP_LOCATION_WEIGHT = 1;
+        private readonly static int NEXT_TO_A_SINGLE_HIT_WEIGHT = 50;
+        private readonly static int IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
         //X - vertical axis
         //Y - horizontal axis
 
@@ -40,6 +43,7 @@ namespace Battleships.AI.Strategies
 
             AdjustProbabilityForShipLocations(gameState, probabilityMap);
 
+
             AdjustProbabilityForSingleHits(gameState, probabilityMap);
 
             AdjustProbabilityForHitClusters(gameState, probabilityMap);
@@ -48,7 +52,7 @@ namespace Battleships.AI.Strategies
 
             AdjustProbabilityForShotAtCells(gameState, probabilityMap);
 
-            GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10); // Assuming a 10x10 grid
+            GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10);    // just for debugging purposes
 
             return probabilityMap;
         }
@@ -72,7 +76,7 @@ namespace Battleships.AI.Strategies
                         {
                             for (int i = 0; i < length; i++)
                             {
-                                probabilityMap[(y * 10) + x + i] += 1;
+                                probabilityMap[(y * 10) + x + i] += POSSIBLE_SHIP_LOCATION_WEIGHT * length;
                             }
                         }
 
@@ -80,7 +84,7 @@ namespace Battleships.AI.Strategies
                         {
                             for (int i = 0; i < length; i++)
                             {
-                                probabilityMap[((y + i) * 10) + x] += 1;
+                                probabilityMap[((y + i) * 10) + x] += POSSIBLE_SHIP_LOCATION_WEIGHT * length;
                             }
                         }
                     }
@@ -92,17 +96,44 @@ namespace Battleships.AI.Strategies
         {
             if (x + length > 10) return false;
 
-            for (int i = 0; i < length; i++)
-            {
-                
 
-                if (!((GridHelper.IsCellEmpty(gameState, x + i, y) && !GridHelper.IsHorizontalNeighbourCluster(gameState, x + i, y))
-                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && !GridHelper.IsHorizontalNeighbourHit(gameState, x + i, y))                   
-                    )) // check if cell is not hit yet OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit)
+            // TODO also check if start/end would be adjacent to any sunk or orthogonal ships :o
+
+            //so in situation like this (H - hit):
+            // _ _ _
+            // _ _ _
+            // _ _ _
+            // _ H H
+            // 3-cell ship can't start at 0,0 because it would touch the edge of the one already hit
+
+            //same goes for this
+            // _ _ _
+            // _ _ _
+            // _ _ _
+            // H H _
+            // 3-cell ship can't start at 0,0 because it would touch the edge of the one already hit
+
+
+            // from above
+            if( (GridHelper.IsHorizontalNeighbourHit(gameState, x - 1, y)) || (GridHelper.IsHorizontalNeighbourHit(gameState, x + length, y)))
+            {
+                return false;
+            }
+
+
+            //TODO MAKE THIS READABLE FOR HUMANS
+            for (int i = 0; i < length; i++)
+            {             
+                if (!((GridHelper.IsCellAvailable(gameState, x + i, y) && !GridHelper.IsHorizontalNeighbourCluster(gameState, x + i, y))
+                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && !GridHelper.IsHorizontalNeighbourHit(gameState, x + i, y))
+                    )) // check if (cell is not shot at yet AND it's orthogonal neighbours aren't hit already)  OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit) TODO: Extract this logic to some new method
                 {
+
                     return false;
                 }
             }
+
+            
 
             return true;
         }
@@ -111,11 +142,18 @@ namespace Battleships.AI.Strategies
         {
             if (y + length > 10) return false;
 
+            // same as in the method above
+
+            if ((GridHelper.IsVerticalNeighbourHit(gameState, x, y - 1)) || (GridHelper.IsVerticalNeighbourHit(gameState, x, y + length)))
+            {
+                return false;
+            }
+
             for (int i = 0; i < length; i++)
             {
-                if (!( (GridHelper.IsCellEmpty(gameState, x + i, y) && !GridHelper.IsVerticalNeighbourCluster(gameState, x + i, y))
-                    || (GridHelper.IsCellHit(gameState, x + i, y) && !GridHelper.IsPartOfSunkShip(x + i, y, gameState) && !GridHelper.IsVerticalNeighbourHit(gameState, x + i, y))
-                    ))   // check if cell is not hit yet OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit)
+                if (!((GridHelper.IsCellAvailable(gameState, x, y + i) && !GridHelper.IsVerticalNeighbourCluster(gameState, x, y + i))
+                    || (GridHelper.IsCellHit(gameState, x, y + i) && !GridHelper.IsPartOfSunkShip(x, y + i, gameState) && !GridHelper.IsVerticalNeighbourHit(gameState, x, y + i))
+                    ))   // check if (cell is not shot at yet AND it's orthogonal neighbours aren't hit already)  OR (hit AND the ship is not sunk yet AND orthogonal cells are not hit) TODO: Extract this logic to some new method
                 {
                     return false;
                 }
@@ -136,7 +174,7 @@ namespace Battleships.AI.Strategies
                     {
                         if (GridHelper.IsWithinBounds(cell.X, cell.Y) && GridHelper.IsCellAvailable(gameState, cell.X, cell.Y))
                         {
-                            probabilityMap[(cell.Y * 10) + cell.X] += 50;
+                            probabilityMap[(cell.Y * 10) + cell.X] += NEXT_TO_A_SINGLE_HIT_WEIGHT;
                         }
                     }
                 }
@@ -160,12 +198,12 @@ namespace Battleships.AI.Strategies
                         // Increase probability for cells extending the horizontal cluster
                         if (GridHelper.IsWithinBounds(first.X, first.Y - 1) && GridHelper.IsCellAvailable(gameState, first.X, first.Y - 1))
                         {
-                            probabilityMap[(first.Y - 1) * 10 + first.X] += 100;
+                            probabilityMap[(first.Y - 1) * 10 + first.X] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
                         }
 
                         if (GridHelper.IsWithinBounds(last.X, last.Y + 1) && GridHelper.IsCellAvailable(gameState, last.X, last.Y + 1))
                         {
-                            probabilityMap[(last.Y + 1) * 10 + last.X] += 100;
+                            probabilityMap[(last.Y + 1) * 10 + last.X] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
                         }
 
                         // Set probability to 0 for orthogonal cells
@@ -186,12 +224,12 @@ namespace Battleships.AI.Strategies
                         // Increase probability for cells extending the vertical cluster
                         if (GridHelper.IsWithinBounds(first.X - 1, first.Y) && GridHelper.IsCellAvailable(gameState, first.X - 1, first.Y))
                         {
-                            probabilityMap[(first.Y * 10) + first.X - 1] += 100;
+                            probabilityMap[(first.Y * 10) + first.X - 1] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
                         }
 
                         if (GridHelper.IsWithinBounds(last.X + 1, last.Y) && GridHelper.IsCellAvailable(gameState, last.X + 1, last.Y))
                         {
-                            probabilityMap[(last.Y * 10) + last.X + 1] += 100;
+                            probabilityMap[(last.Y * 10) + last.X + 1] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
                         }
 
                         // Set probability to 0 for orthogonal cells
@@ -294,7 +332,6 @@ namespace Battleships.AI.Strategies
                 }
             }
         }
-
 
         // also think about a scenario if 2 cells are hit in the same line and there's space between them to fit the whole ship - maybe increased probability around single hits will solve that
     }

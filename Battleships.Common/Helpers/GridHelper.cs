@@ -44,18 +44,12 @@ namespace Battleships.Common.Helpers
         {
             return gameState.UserShips
                 .Any(ship => ship.IsSunk && ship.Coordinates.Any(coord => coord.X == x && coord.Y == y));
-        }
-
-        public static bool IsCellEmpty(GameState gameState, int x, int y) 
-        {
-            var shot = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y);
-            return shot == null;
-        }
+        }        
 
         public static bool IsCellHit(GameState gameState, int x, int y)
         {
             var shot = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y);
-            return shot == null || shot.IsHit;
+            return shot != null && shot.IsHit;
         }
 
         public static bool IsVerticalNeighbourHit(GameState gameState, int x, int y)
@@ -75,7 +69,7 @@ namespace Battleships.Common.Helpers
             var secondRight = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 2 && s.IsHit);
 
 
-            return (firstLeft != null && firstLeft != null) || (firstRight != null && secondRight != null);
+            return (firstLeft != null && secondLeft != null) || (firstRight != null && secondRight != null);
         }
 
         public static bool IsVerticalNeighbourCluster(GameState gameState, int x, int y)
@@ -88,6 +82,26 @@ namespace Battleships.Common.Helpers
 
             return (firstUp != null && secondUp != null) || (firstDown != null && secondDown != null);
         }
+
+        //public static bool IsShipInFrontHorizontal(GameState gameState, int x, int y)
+        //{
+        //    var front = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y && s.IsHit);
+        //    var left = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
+        //    var right = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
+
+
+        //    return front != null && (left != null || right != null);
+        //}
+
+        //public static bool IsShipInFrontVertical(GameState gameState, int x, int y)
+        //{
+        //    var front = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y && s.IsHit);
+        //    var up = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
+        //    var down = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
+
+        //    return front != null && (up != null || down != null);
+        //}
+
 
         public static bool IsHorizontalNeighbourHit(GameState gameState, int x, int y)
         {

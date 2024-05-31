@@ -8,8 +8,8 @@ namespace Battleships.Core.Enums
 {
     public enum AiType
     {
-        Random = 0,
-        RandomWithoutAdjacent = 1,
+        Random = 0, // completely random (excluding cells that were already shot at)
+        RandomWithoutAdjacent = 1,  // random, but excluding (excluding cells that were already shot at and the ones adjacent to already sunk ships)
         Heuristic = 2
     }
 }
