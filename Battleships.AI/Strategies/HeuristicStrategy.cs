@@ -1,6 +1,6 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Common.Helpers;
-using System.Diagnostics.Metrics;
+using System.Collections.Generic;
 
 namespace Battleships.AI.Strategies
 {
@@ -11,8 +11,10 @@ namespace Battleships.AI.Strategies
         private readonly static int POSSIBLE_SHIP_LOCATION_WEIGHT = 1;
         private readonly static int NEXT_TO_A_SINGLE_HIT_WEIGHT = 50;
         private readonly static int IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
+
         //X - vertical axis
         //Y - horizontal axis
+        // TODO fix that
 
         public (int X, int Y) GenerateMove(GameState gameState)
         {
@@ -42,8 +44,6 @@ namespace Battleships.AI.Strategies
             var probabilityMap = new int[100];
 
             AdjustProbabilityForShipLocations(gameState, probabilityMap);
-
-            //AdjustProbabilityForSingleHits(gameState, probabilityMap);
 
             AdjustProbabilityForHitClusters(gameState, probabilityMap);
 
@@ -87,26 +87,7 @@ namespace Battleships.AI.Strategies
                     }
                 }
             }
-        }       
-
-        private static void AdjustProbabilityForSingleHits(GameState gameState, int[] probabilityMap)
-        {
-            foreach (var shot in gameState.OpponentShots)
-            {
-                if (shot.IsHit && !GridHelper.IsPartOfSunkShip(shot.X, shot.Y, gameState))
-                {
-                    var adjacentCells = GridHelper.GetSideAdjacentCells(shot.X, shot.Y);                   
-
-                    foreach (var cell in adjacentCells)
-                    {
-                        if (GridHelper.IsWithinBounds(cell.X, cell.Y) && GridHelper.IsCellAvailable(gameState, cell.X, cell.Y))
-                        {
-                            probabilityMap[(cell.Y * 10) + cell.X] += NEXT_TO_A_SINGLE_HIT_WEIGHT;
-                        }
-                    }
-                }
-            }
-        }
+        }        
 
         private static void AdjustProbabilityForHitClusters(GameState gameState, int[] probabilityMap)
         {            
@@ -115,43 +96,46 @@ namespace Battleships.AI.Strategies
             {
                 if (cluster.Count > 1)
                 {
-                    var first = cluster.First();
-                    var last = cluster.Last();
+                    var (startX, startY) = cluster.First();
+                    var (endX, endY) = cluster.Last();
 
-                    var isHorizontal = first.X == last.X;
+                    var isHorizontal = startX == endX;
 
-                    if (isHorizontal)
-                    
+                    if (isHorizontal)                    
                     {
                         // Increase probability for cells extending the horizontal cluster
-                        if (GridHelper.IsWithinBounds(first.X, first.Y - 1) && GridHelper.IsCellAvailable(gameState, first.X, first.Y - 1))
-                        {
-                            probabilityMap[(first.Y - 1) * 10 + first.X] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
-                        }
-
-                        if (GridHelper.IsWithinBounds(last.X, last.Y + 1) && GridHelper.IsCellAvailable(gameState, last.X, last.Y + 1))
-                        {
-                            probabilityMap[(last.Y + 1) * 10 + last.X] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
-                        }
+                        IncreaseProbabilityForCell(gameState, startX, startY - 1, probabilityMap, IN_LINE_WITH_OTHER_HITS_WEIGHT);
+                        IncreaseProbabilityForCell(gameState, endX, endY + 1, probabilityMap, IN_LINE_WITH_OTHER_HITS_WEIGHT);
                     }
                     else
                     {
                         // Increase probability for cells extending the vertical cluster
-                        if (GridHelper.IsWithinBounds(first.X - 1, first.Y) && GridHelper.IsCellAvailable(gameState, first.X - 1, first.Y))
-                        {
-                            probabilityMap[(first.Y * 10) + first.X - 1] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
-                        }
-
-                        if (GridHelper.IsWithinBounds(last.X + 1, last.Y) && GridHelper.IsCellAvailable(gameState, last.X + 1, last.Y))
-                        {
-                            probabilityMap[(last.Y * 10) + last.X + 1] += IN_LINE_WITH_OTHER_HITS_WEIGHT;
-                        }
+                        IncreaseProbabilityForCell(gameState, startX - 1, startY, probabilityMap, IN_LINE_WITH_OTHER_HITS_WEIGHT);
+                        IncreaseProbabilityForCell(gameState, endX + 1, endY, probabilityMap, IN_LINE_WITH_OTHER_HITS_WEIGHT);
                     }
                 }
                 else
                 {
-                    AdjustProbabilityForSingleHits(gameState, probabilityMap);
+                    AdjustProbabilityForSingleHit(gameState, probabilityMap, cluster.First());
                 }
+            }
+        }
+
+        private static void AdjustProbabilityForSingleHit(GameState gameState, int[] probabilityMap, (int X, int Y) hit)
+        {
+            var adjacentCells = GridHelper.GetSideAdjacentCells(hit.X, hit.Y);
+
+            foreach (var (X, Y) in adjacentCells)
+            {
+                IncreaseProbabilityForCell(gameState, X, Y, probabilityMap, NEXT_TO_A_SINGLE_HIT_WEIGHT);
+            }
+        }
+
+        private static void IncreaseProbabilityForCell(GameState gameState, int x, int y, int[] probabilityMap, int weight)
+        {
+            if (GridHelper.IsWithinBounds(x, y) && GridHelper.IsCellAvailable(gameState, x, y))
+            {
+                probabilityMap[y * 10 + x] += weight;
             }
         }
 
@@ -179,14 +163,14 @@ namespace Battleships.AI.Strategies
                         visited[cx, cy] = true;
                         cluster.Add((cx, cy));
 
-                        foreach (var adj in GridHelper.GetSideAdjacentCells(cx, cy))
+                        foreach (var (X, Y) in GridHelper.GetSideAdjacentCells(cx, cy))
                         {
-                            if (GridHelper.IsWithinBounds(adj.X, adj.Y) && !visited[adj.X, adj.Y])
+                            if (GridHelper.IsWithinBounds(X, Y) && !visited[X, Y])
                             {
-                                var adjacentShot = gameState.OpponentShots.FirstOrDefault(s => s.X == adj.X && s.Y == adj.Y && s.IsHit);
+                                var adjacentShot = gameState.OpponentShots.FirstOrDefault(s => s.X == X && s.Y == Y && s.IsHit);
                                 if (adjacentShot != null && !GridHelper.IsPartOfSunkShip(adjacentShot.X, adjacentShot.Y, gameState))
                                 {
-                                    queue.Enqueue((adj.X, adj.Y));
+                                    queue.Enqueue((X, Y));
                                 }
                             }
                         }
@@ -215,11 +199,11 @@ namespace Battleships.AI.Strategies
                 foreach (var coord in ship.Coordinates)
                 {
                     var adjacentCells = GridHelper.GetAllAdjacentCells(coord.X, coord.Y);
-                    foreach (var cell in adjacentCells)
+                    foreach (var (X, Y) in adjacentCells)
                     {
-                        if (GridHelper.IsWithinBounds(cell.X, cell.Y))
+                        if (GridHelper.IsWithinBounds(X, Y))
                         {
-                            probabilityMap[(cell.Y * 10) + cell.X] = 0;
+                            probabilityMap[(Y * 10) + X] = 0;
                         }
                     }
                 }
