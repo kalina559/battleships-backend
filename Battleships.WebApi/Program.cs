@@ -41,6 +41,8 @@ builder.Services.AddScoped<IShipLocationService, ShipLocationService>();
 builder.Services.AddScoped<IOpponentMoveService, OpponentMoveService>();
 builder.Services.AddScoped<IGameStateService, GameStateService>();
 builder.Services.AddScoped<IAiTypeService, AiTypeService>();
+builder.Services.AddScoped<IRuleTypeService, RuleTypeService>();
+
 
 // Configure logging
 builder.Logging.ClearProviders();

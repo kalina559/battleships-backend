@@ -10,5 +10,6 @@ namespace Battleships.Common.GameClasses
         public List<Shot> PlayerShots { get; set; } = [];
         public List<Shot> OpponentShots { get; set; } = [];
         public AiType AiType { get; set; }
+        public bool ShipsCanTouch { get; set; }
     }
 }
