@@ -5,15 +5,36 @@ namespace Battleships.Common.CosmosDb
     public class GameSession
     {
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public required Guid Id { get; set; }
 
         [JsonProperty("sessionId")]
-        public string SessionId { get; set; }
+        public required string SessionId { get; set; }
 
         [JsonProperty("gameState")]
-        public string GameStateJson { get; set; }
+        public required string GameStateJson { get; set; }
 
         [JsonProperty("dateCreated")]
-        public DateTime DateCreated { get; set; }
+        public required DateTime DateCreated { get; set; }
+
+        [JsonProperty("playerWon")]
+        public required bool PlayerWon { get; set; }
+
+        [JsonProperty("playerMovesCount")]
+        public required int PlayerMovesCount { get; set; }
+
+        [JsonProperty("opponentMovesCount")]
+        public required int OpponentMovesCount { get; set; }
+
+        [JsonProperty("aiType")]
+        public required int AiType { get; set; }
+
+        [JsonProperty("shipsCanTouch")]
+        public required bool ShipsCanTouch { get; set; }
+
+        [JsonProperty("playersShipsSunk")]
+        public required int PlayersShipsSunk { get; set; }
+
+        [JsonProperty("opponentsShipsSunk")]
+        public required int OpponentShipsSunk { get; set; }
     }
 }

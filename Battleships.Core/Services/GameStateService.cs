@@ -78,23 +78,30 @@ namespace Battleships.Core.Services
 
             if (allPlayerShipsSunk || allOpponentShipsSunk)
             {
-                SaveGameSessionToDb(gameState);
+                SaveGameSessionToDb(gameState, playerWon: allOpponentShipsSunk);
                 return true;
             }
 
             return false;
         }
 
-        private void SaveGameSessionToDb(GameState gameState)
+        private void SaveGameSessionToDb(GameState gameState, bool playerWon)
         {
             if (env.IsProduction())
             {
                 var gameSession = new GameSession
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     GameStateJson = JsonConvert.SerializeObject(gameState),
                     SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    AiType = (int)gameState.AiType,
+                    ShipsCanTouch = gameState.ShipsCanTouch,
+                    OpponentShipsSunk = gameState.OpponentShips.Where(x => x.IsSunk).Count(),
+                    PlayersShipsSunk = gameState.UserShips.Where(x => x.IsSunk).Count(),
+                    OpponentMovesCount = gameState.OpponentShots.Count(),
+                    PlayerMovesCount = gameState.PlayerShots.Count(),
+                    PlayerWon = playerWon
                 };
 
                 cosmosDbService.AddGameSessionAsync(gameSession);
