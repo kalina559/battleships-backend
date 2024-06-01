@@ -20,6 +20,9 @@ jobs:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Replace CosmosDb secret in appsettings.json
+      run: |
+        sed -i 's/__CosmosDb-Secret__/${{ secrets.COSMOSDB_SECRET }}/g' appsettings.json
     - name: Build
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Test

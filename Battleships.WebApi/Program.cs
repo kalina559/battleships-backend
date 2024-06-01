@@ -1,5 +1,9 @@
+using Battleships.Common.Settings;
 using Battleships.Core.Services;
 using Battleships.Services.Interfaces;
+using Battleships.WebApi;
+using System;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +46,13 @@ builder.Services.AddScoped<IOpponentMoveService, OpponentMoveService>();
 builder.Services.AddScoped<IGameStateService, GameStateService>();
 builder.Services.AddScoped<IAiTypeService, AiTypeService>();
 builder.Services.AddScoped<IRuleTypeService, RuleTypeService>();
+builder.Services.AddScoped<ICosmosDbService, CosmosDbService>();
+
+var cosmosDbSettings = new CosmosDbSettings();
+builder.Configuration.Bind(nameof(CosmosDbSettings), cosmosDbSettings);
+builder.Services.AddSingleton(cosmosDbSettings);
+
+ServiceCollectionSetup.InitializeCosmosClientInstanceAsync(cosmosDbSettings, builder.Services);
 
 
 // Configure logging

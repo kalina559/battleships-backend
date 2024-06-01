@@ -1,14 +1,17 @@
-﻿using Battleships.Common.GameClasses;
+﻿using Battleships.Common.CosmosDb;
+using Battleships.Common.GameClasses;
 using Battleships.Core.Exceptions;
 using Battleships.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Battleships.Core.Services
 {
-    public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<GameStateService> logger, IMemoryCache memoryCache) : IGameStateService
+    public class GameStateService(IHttpContextAccessor httpContextAccessor, ILogger<GameStateService> logger, IMemoryCache memoryCache, ICosmosDbService cosmosDbService, IHostEnvironment env) : IGameStateService
     {
         public GameState GetGameState()
         {
@@ -18,7 +21,7 @@ namespace Battleships.Core.Services
             {
                 logger.LogInformation("No game state found in cache for session ID: {sessionId}", sessionId);
                 return new GameState();
-            }
+            }           
 
             var deserializedGameState = DeserializeGameStateJson(gameStateJson);
 
@@ -73,7 +76,29 @@ namespace Battleships.Core.Services
             var allPlayerShipsSunk = gameState.UserShips.All(ship => ship.IsSunk);
             var allOpponentShipsSunk = gameState.OpponentShips.All(ship => ship.IsSunk);
 
-            return allPlayerShipsSunk || allOpponentShipsSunk;
+            if (allPlayerShipsSunk || allOpponentShipsSunk)
+            {
+                SaveGameSessionToDb(gameState);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SaveGameSessionToDb(GameState gameState)
+        {
+            if (env.IsProduction())
+            {
+                var gameSession = new GameSession
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    GameStateJson = JsonConvert.SerializeObject(gameState),
+                    SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
+                    DateCreated = DateTime.UtcNow
+                };
+
+                cosmosDbService.AddGameSessionAsync(gameSession);
+            }
         }
 
         public void ClearGameState()
