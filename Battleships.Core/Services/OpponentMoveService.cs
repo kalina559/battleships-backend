@@ -14,7 +14,7 @@ namespace Battleships.Core.Services
             _strategies = new Dictionary<AiType, IAiStrategy>
             {
                 { AiType.Random, new RandomStrategy() },
-                { AiType.RandomWithoutAdjacent, new RandomWithoutAdjacentStrategy() },
+                { AiType.RandomPlus, new RandomWithoutAdjacentStrategy() },
                 { AiType.Heuristic, new HeuristicStrategy() }
             };
         }
