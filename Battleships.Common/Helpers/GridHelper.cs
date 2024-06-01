@@ -1,9 +1,5 @@
 ﻿using Battleships.Common.GameClasses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.Metrics;
 
 namespace Battleships.Common.Helpers
 {
@@ -11,15 +7,15 @@ namespace Battleships.Common.Helpers
     {
         public static IEnumerable<(int X, int Y)> GetAllAdjacentCells(int x, int y)
         {
-            return new List<(int X, int Y)>
-    {
-        (x - 1, y), (x + 1, y),
-        (x, y - 1), (x, y + 1),
-        (x - 1, y - 1), (x - 1, y + 1),
-        (x + 1, y - 1), (x + 1, y + 1)
-    };
+            return GetSideAdjacentCells(x, y).Concat(GetEdgeAdjacentCells(x, y));
         }
 
+        /// <summary>
+        /// Gets all cells that are touching the sides of the cell with (x,y) coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public static IEnumerable<(int X, int Y)> GetSideAdjacentCells(int x, int y)
         {
             return new List<(int X, int Y)>
@@ -27,6 +23,46 @@ namespace Battleships.Common.Helpers
         (x - 1, y), (x + 1, y),
         (x, y - 1), (x, y + 1)
     };
+        }
+
+        /// <summary>
+        /// Gets all cells that are touching the edges of the cell with (x,y) coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static IEnumerable<(int X, int Y)> GetEdgeAdjacentCells(int x, int y)
+        {
+            return new List<(int X, int Y)>
+    {
+        (x - 1, y - 1), (x - 1, y + 1),
+        (x + 1, y - 1), (x + 1, y + 1)
+    };
+        }
+
+        public static bool IsValidShipPosition(GameState gameState, int x, int y, int length, bool isVertical)
+        {
+            int maxLength = isVertical ? x + length : y + length;
+            if (maxLength > 10) return false;
+
+            for (int i = 0; i < length; i++)
+            {
+                int currentX = isVertical ? x + i : x;
+                int currentY = isVertical ? y : y + i;
+
+                if (IsEdgeAdjacentCellHit(gameState, currentX, currentY))
+                {
+                    return false;
+                }
+
+                if (!(IsCellAvailable(gameState, currentX, currentY)
+                      || (IsCellHit(gameState, currentX, currentY) && !IsPartOfSunkShip(currentX, currentY, gameState))))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static bool IsCellAvailable(GameState gameState, int x, int y)
@@ -52,63 +88,12 @@ namespace Battleships.Common.Helpers
             return shot != null && shot.IsHit;
         }
 
-        public static bool IsVerticalNeighbourHit(GameState gameState, int x, int y)
+        public static bool IsEdgeAdjacentCellHit(GameState gameState, int x, int y)
         {
-            var up = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
-            var down = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
+            var edgeAdjacentCells = GetEdgeAdjacentCells(x, y);
+            var hit = edgeAdjacentCells.Any(cell => gameState.OpponentShots.Any(shot => cell.X == shot.X && cell.Y == shot.Y && shot.IsHit));
 
-            return up != null || down != null;
-        }
-
-        public static bool IsHorizontalNeighbourCluster(GameState gameState, int x, int y)
-        {
-            var firstLeft = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
-            var secondLeft = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 2 && s.IsHit);
-
-            var firstRight = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
-            var secondRight = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 2 && s.IsHit);
-
-
-            return (firstLeft != null && secondLeft != null) || (firstRight != null && secondRight != null);
-        }
-
-        public static bool IsVerticalNeighbourCluster(GameState gameState, int x, int y)
-        {
-            var firstUp = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
-            var secondUp = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 2 && s.Y == y && s.IsHit);
-
-            var firstDown = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
-            var secondDown = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 2 && s.Y == y && s.IsHit);
-
-            return (firstUp != null && secondUp != null) || (firstDown != null && secondDown != null);
-        }
-
-        //public static bool IsShipInFrontHorizontal(GameState gameState, int x, int y)
-        //{
-        //    var front = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y && s.IsHit);
-        //    var left = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
-        //    var right = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
-
-
-        //    return front != null && (left != null || right != null);
-        //}
-
-        //public static bool IsShipInFrontVertical(GameState gameState, int x, int y)
-        //{
-        //    var front = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y && s.IsHit);
-        //    var up = gameState.OpponentShots.FirstOrDefault(s => s.X == x - 1 && s.Y == y && s.IsHit);
-        //    var down = gameState.OpponentShots.FirstOrDefault(s => s.X == x + 1 && s.Y == y && s.IsHit);
-
-        //    return front != null && (up != null || down != null);
-        //}
-
-
-        public static bool IsHorizontalNeighbourHit(GameState gameState, int x, int y)
-        {
-            var left = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y - 1 && s.IsHit);
-            var right = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y + 1 && s.IsHit);
-
-            return left != null || right != null;
+            return hit;
         }
 
         public static void PrintProbabilityGrid(int[] probabilityMap, int rows, int columns)
@@ -133,6 +118,11 @@ namespace Battleships.Common.Helpers
                 }
                 Console.WriteLine();
             }
+        }
+
+        public static void OrderHitCluster(ref List<(int X, int Y)> cluster)
+        {
+            cluster = [.. cluster.OrderBy(cell => cell.Y).ThenBy(cell => cell.X)];
         }
     }
 }
