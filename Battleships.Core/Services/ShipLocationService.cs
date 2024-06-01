@@ -3,7 +3,7 @@ using Battleships.Services.Interfaces;
 
 namespace Battleships.Core.Services
 {
-    public class ShipLocationService : IShipLocationService
+    public class ShipLocationService(IGameStateService gameStateService) : IShipLocationService
     {
         private static readonly Random _random = new();
 
@@ -19,16 +19,17 @@ namespace Battleships.Core.Services
             };
 
             var grid = new bool[10, 10];
+            var gameState = gameStateService.GetGameState();
 
             foreach (var ship in ships)
             {
-                PlaceShip(ship, grid);
+                PlaceShip(ship, grid, gameState.ShipsCanTouch);
             }
 
             return ships;
         }
 
-        private static void PlaceShip(Ship ship, bool[,] grid)
+        private static void PlaceShip(Ship ship, bool[,] grid, bool shipsCanTouch)
         {
             bool placed = false;
 
@@ -41,12 +42,17 @@ namespace Battleships.Core.Services
                 if (direction == 0 && startX + ship.Size <= 10)
                 {
                     // Horizontal
-                    if (IsAreaClear(grid, startX, startY, ship.Size, true))
+                    if (IsAreaClear(grid, startX, startY, ship.Size, true, shipsCanTouch))
                     {
                         for (int i = 0; i < ship.Size; i++)
                         {
                             grid[startX + i, startY] = true;
-                            MarkAdjacentCells(grid, startX + i, startY);
+
+                            if (!shipsCanTouch)
+                            {
+                                MarkAdjacentCells(grid, startX + i, startY);
+                            }
+
                             ship.Coordinates.Add(new Coordinate { X = startX + i, Y = startY });
                         }
                         placed = true;
@@ -55,7 +61,7 @@ namespace Battleships.Core.Services
                 else if (direction == 1 && startY + ship.Size <= 10)
                 {
                     // Vertical
-                    if (IsAreaClear(grid, startX, startY, ship.Size, false))
+                    if (IsAreaClear(grid, startX, startY, ship.Size, false, shipsCanTouch))
                     {
                         for (int i = 0; i < ship.Size; i++)
                         {
@@ -69,14 +75,14 @@ namespace Battleships.Core.Services
             }
         }
 
-        private static bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal)
+        private static bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal, bool shipsCanTouch)
         {
             for (int i = 0; i < size; i++)
             {
                 int x = horizontal ? startX + i : startX;
                 int y = horizontal ? startY : startY + i;
 
-                if (grid[x, y] || IsAdjacentOccupied(grid, x, y))
+                if (grid[x, y] || (!shipsCanTouch && IsAdjacentOccupied(grid, x, y)))
                 {
                     return false;
                 }

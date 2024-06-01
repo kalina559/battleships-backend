@@ -50,7 +50,7 @@ namespace Battleships.Common.Helpers
                 int currentX = isVertical ? x + i : x;
                 int currentY = isVertical ? y : y + i;
 
-                if (IsEdgeAdjacentCellHit(gameState, currentX, currentY))
+                if (!gameState.ShipsCanTouch && IsEdgeAdjacentCellHit(gameState, currentX, currentY))
                 {
                     return false;
                 }

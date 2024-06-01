@@ -47,7 +47,10 @@ namespace Battleships.AI.Strategies
 
             AdjustProbabilityForHitClusters(gameState, probabilityMap);
 
-            AdjustProbabilityForSunkShips(gameState, probabilityMap);
+            if (!gameState.ShipsCanTouch)
+            {
+                AdjustProbabilityForSunkShips(gameState, probabilityMap);
+            }
 
             AdjustProbabilityForShotAtCells(gameState, probabilityMap);
 
