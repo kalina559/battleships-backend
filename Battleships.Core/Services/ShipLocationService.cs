@@ -66,7 +66,12 @@ namespace Battleships.Core.Services
                         for (int i = 0; i < ship.Size; i++)
                         {
                             grid[startX, startY + i] = true;
-                            MarkAdjacentCells(grid, startX, startY + i);
+
+                            if (!shipsCanTouch)
+                            {
+                                MarkAdjacentCells(grid, startX, startY + i);
+                            }
+
                             ship.Coordinates.Add(new Coordinate { X = startX, Y = startY + i });
                         }
                         placed = true;

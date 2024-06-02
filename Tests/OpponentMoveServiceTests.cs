@@ -19,7 +19,7 @@ namespace Battleships.UnitTests
         {
             var gameState = new GameState
             {
-                AiType = AiType.Heuristic,
+                AiType = AiType.LocationAndHitHeuristic,
                 OpponentShots = [new() { X = 5, Y = 4, IsHit = true }, new Shot { X = 5, Y = 5, IsHit = true }, new Shot { X = 5, Y = 6, IsHit = true }],
                 UserShips =
                 [
