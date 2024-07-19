@@ -6,9 +6,9 @@ namespace Battleships.AI.Strategies.Heuristics
     {
         private static readonly Random _random = new();
 
-        public (int X, int Y) GenerateMove(GameState gameState)
+        public (int X, int Y) GenerateMove(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {
-            var probabilityMap = GenerateProbabilityMap(gameState);
+            var probabilityMap = GenerateProbabilityMap(previousShots, opponentShips, shipsCanTouch);
 
             var maxProbability = probabilityMap.Max();
 
@@ -16,7 +16,7 @@ namespace Battleships.AI.Strategies.Heuristics
                 .Select((prob, index) => (prob, index))
                 .Where(x => x.prob == maxProbability)
                 .Select(x => (x.index % 10, x.index / 10))
-                .Where(x => !gameState.OpponentShots.Any(shot => shot.X == x.Item1 && shot.Y == x.Item2))    //make sure we're not shooting at the same cell twice
+                .Where(x => !previousShots.Any(shot => shot.X == x.Item1 && shot.Y == x.Item2))    //make sure we're not shooting at the same cell twice
                 .ToList();
 
             if (bestMoves.Count != 0)
@@ -26,9 +26,9 @@ namespace Battleships.AI.Strategies.Heuristics
             }
 
             // Fallback to a random move if no valid moves found (shouldn't happen with a 10x10 grid)
-            return new RandomStrategy().GenerateMove(gameState);
+            return new RandomStrategy().GenerateMove(previousShots, opponentShips, shipsCanTouch);
         }
 
-        public abstract int[] GenerateProbabilityMap(GameState gameState);
+        public abstract int[] GenerateProbabilityMap(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch);
     }
 }

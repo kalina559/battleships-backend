@@ -16,11 +16,11 @@ namespace Battleships.WebApi.Controllers
             return Ok(new { result.IsHit, result.IsSunk, Win = win });
         }
 
-        [HttpPost("opponent")]
+        [HttpGet("opponent")]
         public IActionResult OpponentShot()
         {
             var gameState = gameStateService.GetGameState();
-            var (X, Y) = opponentMoveService.GenerateMove(gameState, gameState.OpponentAiType);
+            var (X, Y) = opponentMoveService.GenerateMove(gameState.OpponentShots, gameState.UserShips, gameState.ShipsCanTouch, gameState.OpponentAiType);
 
             var result = gameStateService.ProcessShot(X, Y, isPlayer: false);
             var win = gameStateService.CheckWinCondition();

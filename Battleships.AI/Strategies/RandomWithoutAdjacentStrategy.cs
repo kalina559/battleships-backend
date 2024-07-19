@@ -10,9 +10,9 @@ namespace Battleships.AI.Strategies
     {
         private static readonly Random _random = new();
 
-        public (int X, int Y) GenerateMove(GameState gameState)
+        public (int X, int Y) GenerateMove(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {
-            var validMoves = GetValidMoves(gameState);
+            var validMoves = GetValidMoves(previousShots, opponentShips);
 
             if (validMoves.Count != 0)
             {
@@ -21,10 +21,10 @@ namespace Battleships.AI.Strategies
             }
 
             // Fallback to a random move if no valid moves found (shouldn't happen with a 10x10 grid)
-            return new RandomStrategy().GenerateMove(gameState);
+            return new RandomStrategy().GenerateMove(previousShots, opponentShips, shipsCanTouch);
         }
 
-        private static List<(int X, int Y)> GetValidMoves(GameState gameState)
+        private static List<(int X, int Y)> GetValidMoves(List<Shot> previousShots, List<Ship> opponentShips)
         {
             var moves = new List<(int X, int Y)>();
 
@@ -32,7 +32,7 @@ namespace Battleships.AI.Strategies
             {
                 for (int y = 0; y < 10; y++)
                 {
-                    if (IsCellAvailable(gameState, x, y))
+                    if (IsCellAvailable(previousShots, opponentShips, x, y))
                     {
                         moves.Add((x, y));
                     }
@@ -42,7 +42,7 @@ namespace Battleships.AI.Strategies
             return moves;
         }
 
-        private static bool IsNotAdjacentToSunkShip(int x, int y, GameState gameState)
+        private static bool IsNotAdjacentToSunkShip(int x, int y, List<Shot> previousShots, List<Ship> opponentShips)
         {
             var adjacentOffsets = new (int dx, int dy)[]
             {
@@ -58,11 +58,11 @@ namespace Battleships.AI.Strategies
 
                 if (adjX >= 0 && adjX < 10 && adjY >= 0 && adjY < 10)
                 {
-                    var adjacentShot = gameState.OpponentShots.FirstOrDefault(s => s.X == adjX && s.Y == adjY);
+                    var adjacentShot = previousShots.FirstOrDefault(s => s.X == adjX && s.Y == adjY);
                     if (adjacentShot != null && adjacentShot.IsHit)
                     {
                         // Check if the hit cell is part of a sunk ship
-                        return gameState.UserShips.Any(ship =>
+                        return opponentShips.Any(ship =>
                             ship.Coordinates.Any(coord => coord.X == adjX && coord.Y == adjY) &&
                             ship.IsSunk);
                     }
@@ -72,9 +72,9 @@ namespace Battleships.AI.Strategies
             });
         }
 
-        private static bool IsCellAvailable(GameState gameState, int x, int y)
+        private static bool IsCellAvailable(List<Shot> previousShots, List<Ship> opponentShips, int x, int y)
         {
-            return IsNotAdjacentToSunkShip(x, y, gameState) && !gameState.OpponentShots.Any(s => s.X == x && s.Y == y);
+            return IsNotAdjacentToSunkShip(x, y, previousShots, opponentShips) && !previousShots.Any(s => s.X == x && s.Y == y);
         }
     }
 }

@@ -24,14 +24,14 @@ namespace Battleships.Core.Services
             };
         }
 
-        public (int X, int Y) GenerateMove(GameState gameState, AiType aiType)
+        public (int X, int Y) GenerateMove(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch, AiType aiType)
         {
             if (!_strategies.TryGetValue(aiType, out var strategy))
             {
-                throw new ArgumentException($"Strategy for AI type {gameState.OpponentAiType} not found.");
+                throw new ArgumentException($"Strategy for AI type {aiType} not found.");
             }
 
-            return strategy.GenerateMove(gameState);
+            return strategy.GenerateMove(previousShots, opponentShips, shipsCanTouch);
         }
     }
 }

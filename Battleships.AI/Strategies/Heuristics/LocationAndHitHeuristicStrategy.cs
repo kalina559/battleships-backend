@@ -13,20 +13,20 @@ namespace Battleships.AI.Strategies.Heuristics
         private readonly static int NEXT_TO_A_SINGLE_HIT_WEIGHT = 50;
         private readonly static int IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
 
-        public override int[] GenerateProbabilityMap(GameState gameState)
+        public override int[] GenerateProbabilityMap(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {
             var probabilityMap = new int[100];
 
-            HeuristicHelper.AdjustProbabilityForShipLocations(gameState, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT);
+            HeuristicHelper.AdjustProbabilityForShipLocations(previousShots, opponentShips, shipsCanTouch, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT);
 
-            HeuristicHelper.AdjustProbabilityForHitClusters(gameState, probabilityMap, NEXT_TO_A_SINGLE_HIT_WEIGHT, IN_LINE_WITH_OTHER_HITS_WEIGHT);
+            HeuristicHelper.AdjustProbabilityForHitClusters(previousShots, opponentShips, probabilityMap, NEXT_TO_A_SINGLE_HIT_WEIGHT, IN_LINE_WITH_OTHER_HITS_WEIGHT);
 
-            if (!gameState.ShipsCanTouch)
+            if (!shipsCanTouch)
             {
-                HeuristicHelper.AdjustProbabilityForSunkShips(gameState, probabilityMap);
+                HeuristicHelper.AdjustProbabilityForSunkShips(opponentShips, probabilityMap);
             }
 
-            HeuristicHelper.AdjustProbabilityForShotAtCells(gameState, probabilityMap);
+            HeuristicHelper.AdjustProbabilityForShotAtCells(previousShots, probabilityMap);
 
             GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10);    // just for debugging purposes
 

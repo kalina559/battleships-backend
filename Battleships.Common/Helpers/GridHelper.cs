@@ -40,7 +40,7 @@ namespace Battleships.Common.Helpers
     };
         }
 
-        public static bool IsValidShipPosition(GameState gameState, int x, int y, int length, bool isVertical)
+        public static bool IsValidShipPosition(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch, int x, int y, int length, bool isVertical)
         {
             int maxLength = isVertical ? x + length : y + length;
             if (maxLength > 10) return false;
@@ -50,13 +50,13 @@ namespace Battleships.Common.Helpers
                 int currentX = isVertical ? x + i : x;
                 int currentY = isVertical ? y : y + i;
 
-                if (!gameState.ShipsCanTouch && IsEdgeAdjacentCellHit(gameState, currentX, currentY))
+                if (!shipsCanTouch && IsEdgeAdjacentCellHit(previousShots, currentX, currentY))
                 {
                     return false;
                 }
 
-                if (!(IsCellAvailable(gameState, currentX, currentY)
-                      || (IsCellHit(gameState, currentX, currentY) && !IsPartOfSunkShip(currentX, currentY, gameState))))
+                if (!(IsCellAvailable(previousShots, currentX, currentY)
+                      || (IsCellHit(previousShots, currentX, currentY) && !IsPartOfSunkShip(currentX, currentY, opponentShips))))
                 {
                     return false;
                 }
@@ -65,9 +65,9 @@ namespace Battleships.Common.Helpers
             return true;
         }
 
-        public static bool IsCellAvailable(GameState gameState, int x, int y)
+        public static bool IsCellAvailable(List<Shot> previousShots, int x, int y)
         {
-            var shot = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y);
+            var shot = previousShots.FirstOrDefault(s => s.X == x && s.Y == y);
             return shot == null;
         }
 
@@ -76,22 +76,22 @@ namespace Battleships.Common.Helpers
             return x >= 0 && x < 10 && y >= 0 && y < 10;
         }
 
-        public static bool IsPartOfSunkShip(int x, int y, GameState gameState)
+        public static bool IsPartOfSunkShip(int x, int y, List<Ship> opponentShips)
         {
-            return gameState.UserShips
+            return opponentShips
                 .Any(ship => ship.IsSunk && ship.Coordinates.Any(coord => coord.X == x && coord.Y == y));
         }        
 
-        public static bool IsCellHit(GameState gameState, int x, int y)
+        public static bool IsCellHit(List<Shot> previousShots, int x, int y)
         {
-            var shot = gameState.OpponentShots.FirstOrDefault(s => s.X == x && s.Y == y);
+            var shot = previousShots.FirstOrDefault(s => s.X == x && s.Y == y);
             return shot != null && shot.IsHit;
         }
 
-        public static bool IsEdgeAdjacentCellHit(GameState gameState, int x, int y)
+        public static bool IsEdgeAdjacentCellHit(List<Shot> previousShots, int x, int y)
         {
             var edgeAdjacentCells = GetEdgeAdjacentCells(x, y);
-            var hit = edgeAdjacentCells.Any(cell => gameState.OpponentShots.Any(shot => cell.X == shot.X && cell.Y == shot.Y && shot.IsHit));
+            var hit = edgeAdjacentCells.Any(cell => previousShots.Any(shot => cell.X == shot.X && cell.Y == shot.Y && shot.IsHit));
 
             return hit;
         }

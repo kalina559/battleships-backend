@@ -21,6 +21,7 @@ namespace Battleships.UnitTests
             {
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 OpponentShots = [new() { X = 5, Y = 4, IsHit = true }, new Shot { X = 5, Y = 5, IsHit = true }, new Shot { X = 5, Y = 6, IsHit = true }],
+                ShipsCanTouch = false,
                 UserShips =
                 [
                     new() { Size = 1, Coordinates = [new() { X = 0, Y = 0, IsHit = false }], IsSunk = false },
@@ -38,7 +39,7 @@ namespace Battleships.UnitTests
 
             for (int i = 0; i < 100; i++)
             {
-                var move = _opponentMoveService.GenerateMove(gameState, gameState.OpponentAiType);
+                var move = _opponentMoveService.GenerateMove(gameState.OpponentShots, gameState.UserShips, gameState.ShipsCanTouch, gameState.OpponentAiType);
 
                 if (forbiddenCells.Contains(move))
                 {

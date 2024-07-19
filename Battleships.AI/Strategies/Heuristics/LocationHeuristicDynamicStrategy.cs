@@ -10,13 +10,13 @@ namespace Battleships.AI.Strategies.Heuristics
     {
         private readonly static int POSSIBLE_SHIP_LOCATION_WEIGHT = 1;
 
-        public override int[] GenerateProbabilityMap(GameState gameState)
+        public override int[] GenerateProbabilityMap(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {
             var probabilityMap = new int[100];
 
-            HeuristicHelper.AdjustProbabilityForShipLocations(gameState, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT, dynamicWeight: true, dynamicPower: 2);
+            HeuristicHelper.AdjustProbabilityForShipLocations(previousShots, opponentShips, shipsCanTouch, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT, dynamicWeight: true, dynamicPower: 2);
 
-            HeuristicHelper.AdjustProbabilityForShotAtCells(gameState, probabilityMap);
+            HeuristicHelper.AdjustProbabilityForShotAtCells(previousShots, probabilityMap);
 
             GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10);    // just for debugging purposes
 

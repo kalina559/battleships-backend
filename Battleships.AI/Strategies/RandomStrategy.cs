@@ -9,9 +9,9 @@ namespace Battleships.AI.Strategies
     {
         private static readonly Random _random = new();
 
-        public (int X, int Y) GenerateMove(GameState gameState)
+        public (int X, int Y) GenerateMove(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {
-            var validMoves = GetValidMoves(gameState);
+            var validMoves = GetValidMoves(previousShots);
 
             if (validMoves.Count != 0)
             {
@@ -20,10 +20,10 @@ namespace Battleships.AI.Strategies
             }
 
             // Fallback to a random move if no valid moves found (shouldn't happen with a 10x10 grid)
-            return new RandomStrategy().GenerateMove(gameState);
+            return new RandomStrategy().GenerateMove(previousShots, opponentShips, shipsCanTouch);
         }
 
-        private static List<(int X, int Y)> GetValidMoves(GameState gameState)
+        private static List<(int X, int Y)> GetValidMoves(List<Shot> previousShots)
         {
             var moves = new List<(int X, int Y)>();
 
@@ -31,7 +31,7 @@ namespace Battleships.AI.Strategies
             {
                 for (int y = 0; y < 10; y++)
                 {
-                    if (IsCellAvailable(gameState, x, y))
+                    if (IsCellAvailable(previousShots, x, y))
                     {
                         moves.Add((x, y));
                     }
@@ -41,9 +41,9 @@ namespace Battleships.AI.Strategies
             return moves;
         }
 
-        private static bool IsCellAvailable(GameState gameState, int x, int y)
+        private static bool IsCellAvailable(List<Shot> previousShots, int x, int y)
         {
-            return !gameState.OpponentShots.Any(s => s.X == x && s.Y == y);
+            return !previousShots.Any(s => s.X == x && s.Y == y);
         }
     }
 }
