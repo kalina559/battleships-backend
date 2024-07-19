@@ -20,7 +20,7 @@ namespace Battleships.WebApi.Controllers
         public IActionResult OpponentShot()
         {
             var gameState = gameStateService.GetGameState();
-            var (X, Y) = opponentMoveService.GenerateMove(gameState.Human.Shots, gameState.Bot.Ships, gameState.ShipsCanTouch, gameState.Human.AiType.Value);
+            var (X, Y) = opponentMoveService.GenerateMove(gameState.OpponentShots, gameState.UserShips, gameState.ShipsCanTouch, gameState.OpponentAiType);
 
             var result = gameStateService.ProcessShot(X, Y, isPlayer: false);
             var win = gameStateService.CheckWinCondition();
