@@ -12,7 +12,7 @@ namespace Battleships.WebApi.Controllers
         public IActionResult SetUserShips([FromBody] List<Ship> ships)
         {
             var gameState = gameStateService.GetGameState();
-            gameState.UserShips = ships;
+            gameState.Bot.Ships = ships;
             gameStateService.SaveGameState(gameState);
             return Ok();
         }
@@ -27,10 +27,10 @@ namespace Battleships.WebApi.Controllers
 
             var gameState = gameStateService.GetGameState();
 
-            gameState.OpponentShips = shipLocationService.GenerateOpponentShips();
+            gameState.Human.Ships = shipLocationService.GenerateOpponentShips();
             gameStateService.SaveGameState(gameState);
 
-            return Ok(gameState.OpponentShips);
+            return Ok(gameState.Human.Ships);
         }
     }
 }

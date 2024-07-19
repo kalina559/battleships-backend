@@ -46,8 +46,8 @@ namespace Battleships.Core.Services
         public ShotResult ProcessShot(int x, int y, bool isPlayer)
         {
             var gameState = GetGameState();
-            var targetShips = isPlayer ? gameState.OpponentShips : gameState.UserShips;
-            var shotList = isPlayer ? gameState.PlayerShots : gameState.OpponentShots;
+            var targetShips = isPlayer ? gameState.Human.Ships : gameState.Bot.Ships;
+            var shotList = isPlayer ? gameState.Bot.Shots : gameState.Human.Shots;
 
             var hit = targetShips.Any(ship => ship.Coordinates.Any(coord => coord.X == x && coord.Y == y));
             shotList.Add(new Shot { X = x, Y = y, IsHit = hit });
@@ -73,8 +73,8 @@ namespace Battleships.Core.Services
         {
             var gameState = GetGameState();
 
-            var allPlayerShipsSunk = gameState.UserShips.All(ship => ship.IsSunk);
-            var allOpponentShipsSunk = gameState.OpponentShips.All(ship => ship.IsSunk);
+            var allPlayerShipsSunk = gameState.Bot.Ships.All(ship => ship.IsSunk);
+            var allOpponentShipsSunk = gameState.Human.Ships.All(ship => ship.IsSunk);
 
             if (allPlayerShipsSunk || allOpponentShipsSunk)
             {
@@ -95,12 +95,12 @@ namespace Battleships.Core.Services
                     GameStateJson = JsonConvert.SerializeObject(gameState),
                     SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
                     DateCreated = DateTime.UtcNow,
-                    AiType = (int)gameState.OpponentAiType,
+                    AiType = (int)gameState.Human.AiType,
                     ShipsCanTouch = gameState.ShipsCanTouch,
-                    OpponentShipsSunk = gameState.OpponentShips.Where(x => x.IsSunk).Count(),
-                    PlayersShipsSunk = gameState.UserShips.Where(x => x.IsSunk).Count(),
-                    OpponentMovesCount = gameState.OpponentShots.Count(),
-                    PlayerMovesCount = gameState.PlayerShots.Count(),
+                    OpponentShipsSunk = gameState.Human.Ships.Where(x => x.IsSunk).Count(),
+                    PlayersShipsSunk = gameState.Bot.Ships.Where(x => x.IsSunk).Count(),
+                    OpponentMovesCount = gameState.Human.Shots.Count(),
+                    PlayerMovesCount = gameState.Bot.Shots.Count(),
                     PlayerWon = playerWon
                 };
 
@@ -110,13 +110,7 @@ namespace Battleships.Core.Services
 
         public void ClearGameState()
         {
-            var gameState = new GameState
-            {
-                UserShips = [],
-                OpponentShips = [],
-                PlayerShots = [],
-                OpponentShots = []
-            };
+            var gameState = new GameState();
             SaveGameState(gameState);
         }
 

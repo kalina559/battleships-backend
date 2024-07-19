@@ -18,7 +18,7 @@ namespace Battleships.Core.Services
         public void SelectAiType(AiType type)
         {
             var gameState = gameStateService.GetGameState();
-            gameState.OpponentAiType = type;
+            gameState.Human.AiType = type;
             gameStateService.SaveGameState(gameState);
 
             logger.LogInformation("AiType updated to {type}.", type);

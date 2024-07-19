@@ -4,12 +4,15 @@ namespace Battleships.Common.GameClasses
 {
     public class GameState
     {
-        public List<Ship> UserShips { get; set; } = [];
-        public List<Ship> OpponentShips { get; set; } = [];
-        public List<Shot> PlayerShots { get; set; } = [];
-        public List<Shot> OpponentShots { get; set; } = [];
-        public AiType? PlayerAiType { get; set; } = null;
-        public AiType OpponentAiType { get; set; }
+        public PlayerInfo Human { get; set; } = new();
+        public PlayerInfo Bot { get; set; } = new();
         public bool ShipsCanTouch { get; set; }
+    }
+
+    public class PlayerInfo
+    {
+        public List<Ship> Ships { get; set; } = [];
+        public List<Shot> Shots { get; set; } = [];
+        public AiType? AiType { get; set; } = null;
     }
 }
