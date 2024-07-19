@@ -1,5 +1,4 @@
 ﻿using Battleships.Core.Enums;
-using System.Collections.Generic;
 
 namespace Battleships.Common.GameClasses
 {
@@ -9,7 +8,8 @@ namespace Battleships.Common.GameClasses
         public List<Ship> OpponentShips { get; set; } = [];
         public List<Shot> PlayerShots { get; set; } = [];
         public List<Shot> OpponentShots { get; set; } = [];
-        public AiType AiType { get; set; }
+        public AiType? PlayerAiType { get; set; } = null;
+        public AiType OpponentAiType { get; set; }
         public bool ShipsCanTouch { get; set; }
     }
 }

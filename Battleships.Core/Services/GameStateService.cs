@@ -95,7 +95,7 @@ namespace Battleships.Core.Services
                     GameStateJson = JsonConvert.SerializeObject(gameState),
                     SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
                     DateCreated = DateTime.UtcNow,
-                    AiType = (int)gameState.AiType,
+                    AiType = (int)gameState.OpponentAiType,
                     ShipsCanTouch = gameState.ShipsCanTouch,
                     OpponentShipsSunk = gameState.OpponentShips.Where(x => x.IsSunk).Count(),
                     PlayersShipsSunk = gameState.UserShips.Where(x => x.IsSunk).Count(),

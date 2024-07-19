@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Battleships.Common.GameClasses
+﻿namespace Battleships.Common.GameClasses
 {
     public class Ship
     {

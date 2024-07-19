@@ -7,11 +7,11 @@ namespace Battleships.UnitTests
 {
     public class OpponentMoveServiceTests
     {
-        private readonly OpponentMoveService _opponentMoveService;
+        private readonly GenerateMoveService _opponentMoveService;
 
         public OpponentMoveServiceTests()
         {
-            _opponentMoveService = new OpponentMoveService();
+            _opponentMoveService = new GenerateMoveService();
         }
 
         [Fact]
@@ -19,7 +19,7 @@ namespace Battleships.UnitTests
         {
             var gameState = new GameState
             {
-                AiType = AiType.LocationAndHitHeuristic,
+                OpponentAiType = AiType.LocationAndHitHeuristic,
                 OpponentShots = [new() { X = 5, Y = 4, IsHit = true }, new Shot { X = 5, Y = 5, IsHit = true }, new Shot { X = 5, Y = 6, IsHit = true }],
                 UserShips =
                 [
@@ -38,7 +38,7 @@ namespace Battleships.UnitTests
 
             for (int i = 0; i < 100; i++)
             {
-                var move = _opponentMoveService.GenerateMove(gameState);
+                var move = _opponentMoveService.GenerateMove(gameState, gameState.OpponentAiType);
 
                 if (forbiddenCells.Contains(move))
                 {

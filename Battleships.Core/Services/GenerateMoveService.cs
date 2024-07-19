@@ -6,11 +6,11 @@ using Battleships.Services.Interfaces;
 
 namespace Battleships.Core.Services
 {
-    public class OpponentMoveService : IOpponentMoveService
+    public class GenerateMoveService : IGenerateMoveService
     {
         private readonly Dictionary<AiType, IAiStrategy> _strategies;
 
-        public OpponentMoveService()
+        public GenerateMoveService()
         {
             _strategies = new Dictionary<AiType, IAiStrategy>
             {
@@ -24,11 +24,11 @@ namespace Battleships.Core.Services
             };
         }
 
-        public (int X, int Y) GenerateMove(GameState gameState)
+        public (int X, int Y) GenerateMove(GameState gameState, AiType aiType)
         {
-            if (!_strategies.TryGetValue(gameState.AiType, out var strategy))
+            if (!_strategies.TryGetValue(aiType, out var strategy))
             {
-                throw new ArgumentException($"Strategy for AI type {gameState.AiType} not found.");
+                throw new ArgumentException($"Strategy for AI type {gameState.OpponentAiType} not found.");
             }
 
             return strategy.GenerateMove(gameState);

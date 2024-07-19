@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
 
 // Register application services
 builder.Services.AddScoped<IShipLocationService, ShipLocationService>();
-builder.Services.AddScoped<IOpponentMoveService, OpponentMoveService>();
+builder.Services.AddScoped<IGenerateMoveService, GenerateMoveService>();
 builder.Services.AddScoped<IGameStateService, GameStateService>();
 builder.Services.AddScoped<IAiTypeService, AiTypeService>();
 builder.Services.AddScoped<IRuleTypeService, RuleTypeService>();
@@ -61,12 +61,9 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseDeveloperExceptionPage();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseDeveloperExceptionPage();
 
 if (app.Environment.IsDevelopment())
 {

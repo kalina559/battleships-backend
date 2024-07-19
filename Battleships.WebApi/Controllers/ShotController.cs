@@ -6,7 +6,7 @@ namespace Battleships.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ShotController(IGameStateService gameStateService, IOpponentMoveService opponentMoveService) : ControllerBase
+    public class ShotController(IGameStateService gameStateService, IGenerateMoveService opponentMoveService) : ControllerBase
     {
         [HttpPost("user")]
         public IActionResult UserShot([FromBody] Shot shot)
@@ -19,7 +19,8 @@ namespace Battleships.WebApi.Controllers
         [HttpPost("opponent")]
         public IActionResult OpponentShot()
         {
-            var (X, Y) = opponentMoveService.GenerateMove(gameStateService.GetGameState());
+            var gameState = gameStateService.GetGameState();
+            var (X, Y) = opponentMoveService.GenerateMove(gameState, gameState.OpponentAiType);
 
             var result = gameStateService.ProcessShot(X, Y, isPlayer: false);
             var win = gameStateService.CheckWinCondition();
