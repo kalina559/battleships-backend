@@ -9,9 +9,10 @@ namespace Battleships.AI.Strategies.Heuristics
     /// </summary>
     public class LocationAndHitHeuristicStrategy : HeuristicStrategyBase
     {
-        private readonly static int POSSIBLE_SHIP_LOCATION_WEIGHT = 1;
-        private readonly static int NEXT_TO_A_SINGLE_HIT_WEIGHT = 50;
-        private readonly static int IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
+        private readonly static int
+            POSSIBLE_SHIP_LOCATION_WEIGHT = 1,
+            NEXT_TO_A_SINGLE_HIT_WEIGHT = 50,
+            IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
 
         public override int[] GenerateProbabilityMap(List<Shot> previousShots, List<Ship> opponentShips, bool shipsCanTouch)
         {

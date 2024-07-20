@@ -95,6 +95,7 @@ namespace Battleships.Core.Services
                     GameStateJson = JsonConvert.SerializeObject(gameState),
                     SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
                     DateCreated = DateTime.UtcNow,
+                    PlayerAiType = (int?)gameState.PlayerAiType,
                     OpponentAiType = (int)gameState.OpponentAiType,
                     ShipsCanTouch = gameState.ShipsCanTouch,
                     OpponentShipsSunk = gameState.OpponentShips.Where(x => x.IsSunk).Count(),
@@ -103,11 +104,6 @@ namespace Battleships.Core.Services
                     PlayerMovesCount = gameState.PlayerShots.Count(),
                     PlayerWon = playerWon
                 };
-
-                if (testMode)
-                {
-                    gameSession.PlayerAiType = (int?)gameState.PlayerAiType;
-                }
 
                 cosmosDbService.AddGameSessionAsync(gameSession, testMode);
             }
