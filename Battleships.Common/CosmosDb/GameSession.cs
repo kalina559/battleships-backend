@@ -25,8 +25,11 @@ namespace Battleships.Common.CosmosDb
         [JsonProperty("opponentMovesCount")]
         public required int OpponentMovesCount { get; set; }
 
-        [JsonProperty("aiType")]
-        public required int AiType { get; set; }
+        [JsonProperty("playerAiType")]
+        public int? PlayerAiType { get; set; }
+
+        [JsonProperty("opponentAiType")]
+        public required int OpponentAiType { get; set; }
 
         [JsonProperty("shipsCanTouch")]
         public required bool ShipsCanTouch { get; set; }

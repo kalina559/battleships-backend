@@ -69,7 +69,7 @@ namespace Battleships.Core.Services
             return new ShotResult { IsHit = hit, IsSunk = isSunk };
         }
 
-        public bool CheckWinCondition()
+        public bool CheckWinCondition(bool testMode = false)
         {
             var gameState = GetGameState();
 
@@ -78,16 +78,16 @@ namespace Battleships.Core.Services
 
             if (allPlayerShipsSunk || allOpponentShipsSunk)
             {
-                SaveGameSessionToDb(gameState, playerWon: allOpponentShipsSunk);
+                SaveGameSessionToDb(gameState, playerWon: allOpponentShipsSunk, testMode);
                 return true;
             }
 
             return false;
         }
 
-        private void SaveGameSessionToDb(GameState gameState, bool playerWon)
+        private void SaveGameSessionToDb(GameState gameState, bool playerWon, bool testMode)
         {
-            if (env.IsProduction())
+            if (env.IsProduction() || testMode)
             {
                 var gameSession = new GameSession
                 {
@@ -95,7 +95,7 @@ namespace Battleships.Core.Services
                     GameStateJson = JsonConvert.SerializeObject(gameState),
                     SessionId = httpContextAccessor.HttpContext.Request.Headers["X-Session-Id"].ToString(),
                     DateCreated = DateTime.UtcNow,
-                    AiType = (int)gameState.OpponentAiType,
+                    OpponentAiType = (int)gameState.OpponentAiType,
                     ShipsCanTouch = gameState.ShipsCanTouch,
                     OpponentShipsSunk = gameState.OpponentShips.Where(x => x.IsSunk).Count(),
                     PlayersShipsSunk = gameState.UserShips.Where(x => x.IsSunk).Count(),
@@ -104,7 +104,12 @@ namespace Battleships.Core.Services
                     PlayerWon = playerWon
                 };
 
-                cosmosDbService.AddGameSessionAsync(gameSession);
+                if (testMode)
+                {
+                    gameSession.PlayerAiType = (int?)gameState.PlayerAiType;
+                }
+
+                cosmosDbService.AddGameSessionAsync(gameSession, testMode);
             }
         }
 

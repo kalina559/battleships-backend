@@ -5,6 +5,6 @@ namespace Battleships.Services.Interfaces
 {
     public interface ICosmosDbService
     {
-        Task AddGameSessionAsync(GameSession gameSession);
+        Task AddGameSessionAsync(GameSession gameSession, bool testMode);
     }
 }

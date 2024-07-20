@@ -1,4 +1,5 @@
 ﻿using Battleships.Common.GameClasses;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Battleships.Common.Helpers
@@ -118,6 +119,22 @@ namespace Battleships.Common.Helpers
                 }
                 Console.WriteLine();
             }
+        }
+
+        public static void PrintGrid(bool[,] grid, int rows, int columns)
+        {
+
+            for (int y = 0; y < rows; y++)
+            {
+                for (int x = 0; x < columns; x++)
+                {
+                    Debug.Write($"{Convert.ToInt32(grid[x, y]),4}"); // Adjust spacing as needed
+                }
+
+                Debug.Write("\n");
+            }
+
+            Debug.Write("\n");
         }
 
         public static void OrderHitCluster(ref List<(int X, int Y)> cluster)

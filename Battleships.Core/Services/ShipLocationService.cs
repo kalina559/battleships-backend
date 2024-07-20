@@ -1,4 +1,5 @@
 ﻿using Battleships.Common.GameClasses;
+using Battleships.Common.Helpers;
 using Battleships.Services.Interfaces;
 
 namespace Battleships.Core.Services
@@ -6,6 +7,8 @@ namespace Battleships.Core.Services
     public class ShipLocationService(IGameStateService gameStateService) : IShipLocationService
     {
         private static readonly Random _random = new();
+
+        static int errors = 0;
 
         public List<Ship> GenerateOpponentShips()
         {
@@ -89,9 +92,16 @@ namespace Battleships.Core.Services
 
                 if (grid[x, y] || (!shipsCanTouch && IsAdjacentOccupied(grid, x, y)))
                 {
+                    if (errors > 50)
+                    {
+                        GridHelper.PrintGrid(grid, 10, 10);    // just for debugging purposes
+                    }
+
+                    errors++;
                     return false;
                 }
             }
+            errors = 0;
             return true;
         }
 
