@@ -16,6 +16,11 @@ namespace Battleships.AI.Strategies.Heuristics
 
             HeuristicHelper.AdjustProbabilityForShipLocations(previousShots, opponentShips, shipsCanTouch, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT, dynamicWeight: true, dynamicPower: 2);
 
+            if (!shipsCanTouch)
+            {
+                HeuristicHelper.AdjustProbabilityForSunkShips(opponentShips, probabilityMap);
+            }
+
             HeuristicHelper.AdjustProbabilityForShotAtCells(previousShots, probabilityMap);
 
             GridHelper.PrintProbabilityGrid(probabilityMap, 10, 10);    // just for debugging purposes

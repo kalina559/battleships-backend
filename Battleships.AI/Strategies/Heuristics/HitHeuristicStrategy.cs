@@ -8,7 +8,6 @@ namespace Battleships.AI.Strategies.Heuristics
     /// </summary>
     public class HitHeuristicStrategy : HeuristicStrategyBase
     {
-        private readonly static int POSSIBLE_SHIP_LOCATION_WEIGHT = 1;
         private readonly static int NEXT_TO_A_SINGLE_HIT_WEIGHT = 50;
         private readonly static int IN_LINE_WITH_OTHER_HITS_WEIGHT = 100;
 

@@ -4,7 +4,7 @@ using Battleships.Common.Helpers;
 namespace Battleships.AI.Strategies.Heuristics
 {
     /// <summary>
-    /// Only take possible ship location into consideration. So the AI is shooting at cells, that are a possible location for the most ships.
+    /// Only take possible ship location into consideration. So the AI is shooting at cells, that are a possible location for the biggest number of ships.
     /// </summary>
     public class LocationHeuristicStrategy : HeuristicStrategyBase
     {
@@ -15,6 +15,11 @@ namespace Battleships.AI.Strategies.Heuristics
             var probabilityMap = new int[100];
 
             HeuristicHelper.AdjustProbabilityForShipLocations(previousShots, opponentShips, shipsCanTouch, probabilityMap, POSSIBLE_SHIP_LOCATION_WEIGHT);
+
+            if (!shipsCanTouch)
+            {
+                HeuristicHelper.AdjustProbabilityForSunkShips(opponentShips, probabilityMap);
+            }
 
             HeuristicHelper.AdjustProbabilityForShotAtCells(previousShots, probabilityMap);
 
