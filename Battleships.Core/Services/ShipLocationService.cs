@@ -8,8 +8,6 @@ namespace Battleships.Core.Services
     {
         private static readonly Random _random = new();
 
-        static int errors = 0;
-
         public List<Ship> GenerateOpponentShips()
         {
             var ships = new List<Ship>
@@ -26,18 +24,32 @@ namespace Battleships.Core.Services
 
             foreach (var ship in ships)
             {
-                PlaceShip(ship, grid, gameState.ShipsCanTouch);
+                var success = PlaceShip(ship, grid, gameState.ShipsCanTouch);
+
+                if (!success)
+                {
+                    // if we get 50 consecutive errors we just abandon this ship placing and try again
+                    return GenerateOpponentShips();
+                }
             }
 
             return ships;
         }
 
-        private static void PlaceShip(Ship ship, bool[,] grid, bool shipsCanTouch)
+        private static bool PlaceShip(Ship ship, bool[,] grid, bool shipsCanTouch)
         {
+            int errorCount = 0;
             bool placed = false;
 
             while (!placed)
             {
+
+                if (errorCount > 50)
+                {
+                    GridHelper.PrintGrid(grid, 10, 10);    // just for debugging purposes
+                    return false;
+                }
+
                 var direction = _random.Next(2); // 0: horizontal, 1: vertical
                 var startX = _random.Next(10);
                 var startY = _random.Next(10);
@@ -80,7 +92,11 @@ namespace Battleships.Core.Services
                         placed = true;
                     }
                 }
+
+                errorCount++;
             }
+
+            return true;
         }
 
         private static bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal, bool shipsCanTouch)
@@ -91,17 +107,10 @@ namespace Battleships.Core.Services
                 int y = horizontal ? startY : startY + i;
 
                 if (grid[x, y] || (!shipsCanTouch && IsAdjacentOccupied(grid, x, y)))
-                {
-                    if (errors > 50)
-                    {
-                        GridHelper.PrintGrid(grid, 10, 10);    // just for debugging purposes
-                    }
-
-                    errors++;
+                {                  
                     return false;
                 }
             }
-            errors = 0;
             return true;
         }
 

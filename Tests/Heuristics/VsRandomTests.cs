@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Battleships.UnitTests.Heuristics
 {
-    public class HeuristicTests
+    public class VsRandomTests
     {
         private Mock<ILogger<CosmosDbService>> _dbLogger = new();
         private Mock<ILogger<GameStateService>> _gameStateLogger = new();
@@ -24,7 +24,7 @@ namespace Battleships.UnitTests.Heuristics
         private Mock<IHostEnvironment> _environment = new();
 
 
-        public HeuristicTests()
+        public VsRandomTests()
         {
             var services = new ServiceCollection();
             services.AddMemoryCache();
@@ -58,7 +58,7 @@ namespace Battleships.UnitTests.Heuristics
             var initialGameState = new GameState
             {
                 PlayerAiType = AiType.HitHeuristic,
-                OpponentAiType = AiType.LocationHeuristic,
+                OpponentAiType = AiType.Random,
                 ShipsCanTouch = false,
             };
 
@@ -67,7 +67,7 @@ namespace Battleships.UnitTests.Heuristics
                 _gameStateService,
                 _generateMoveService,
                 _shipLocationService,
-                3);
+                100);
 
             Assert.True(true);
         }

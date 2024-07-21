@@ -10,13 +10,13 @@ namespace Battleships.WebApi.Controllers
     public class AiTypeController(IAiTypeService aiTypeService) : Controller
     {
         private readonly List<OutputAiInfo> strategyInfo = [
-            new OutputAiInfo() { Type = AiType.Random, ShipsCanTouch = true, Description = new() { { "en", "Random shots" }, { "pl", "Losowe strzały" } } },
-            new OutputAiInfo() { Type = AiType.RandomPlus, ShipsCanTouch = false, Description = new() { { "en", "Random shots excluding cells bordering sunk ships" }, { "pl", "Losowe strzały, z pominięciem pól sąsiadujących z zatopionymi statkami" } } },
-            new OutputAiInfo() { Type = AiType.LocationHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Heuristic focused on cells that could be the location for the most ships" }, { "pl", "Heurystyka skupiona się na polach, które mogą być lokalizacją największej liczby statków" } } },
-            new OutputAiInfo() { Type = AiType.LocationHeuristicDynamic, ShipsCanTouch = true, Description = new() { { "en", "Heuristic focused on cells that could be the location for biggest player's ship left" }, { "pl", "Heurystyka skupiona się na polach, które mogą być lokalizacją największego pozostałego statku użytkownika" } } },
-            new OutputAiInfo() { Type = AiType.HitHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Heuristic focused on successful hits" }, { "pl", "Heurystyka skupiona na dotychczasowych trafieniach" } } },
-            new OutputAiInfo() { Type = AiType.LocationAndHitHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Most complete heuristic, analyzes possible locations and successful hits " }, { "pl", "Najbardziej kompletna heurystyka, analizująca możliwe lokalizacje statków oraz dotychczasowe trafienia" } } },
-            new OutputAiInfo() { Type = AiType.LocationAndHitHeuristicDynamic, ShipsCanTouch = true, Description = new() { { "en", "Most complete heuristic, but prioritizes finiding longer ships first." }, { "pl", "Najbardziej kompletna heurystyka, ale priorytetyzuje odnalezienie najdłuższych statków." } } }
+            new OutputAiInfo() { Type = AiType.Random, ShipsCanTouch = true, Description = new() { { "en", "Random" }, { "pl", "Losowy" } } },
+            new OutputAiInfo() { Type = AiType.RandomPlus, ShipsCanTouch = false, Description = new() { { "en", "Random extended" }, { "pl", "Losowy rozszerzony" } } },
+            new OutputAiInfo() { Type = AiType.LocationHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Max. benefit from single shot" }, { "pl", "Maksymalizacja zysku ze strzału" } } },
+            new OutputAiInfo() { Type = AiType.LocationHeuristicDynamic, ShipsCanTouch = true, Description = new() { { "en", "Max. benefit from single shot prioritizing biggest ships" }, { "pl", "Maksymalizacja zysku ze strzału priorytetyzująca większe statki" } } },
+            new OutputAiInfo() { Type = AiType.HitHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Most probable location based on previous hits" }, { "pl", "Najbardziej prawdopodobna lokalizacja na podstawie trafień" } } },
+            new OutputAiInfo() { Type = AiType.LocationAndHitHeuristic, ShipsCanTouch = true, Description = new() { { "en", "Max. benefit from single shot + analyzing previous hits" }, { "pl", "Maksymalizacja zysku ze strzału + analiza poprzednich trafień" } } },
+            new OutputAiInfo() { Type = AiType.LocationAndHitHeuristicDynamic, ShipsCanTouch = true, Description = new() { { "en", "Max. benefit from single shot prioritizing biggest ships + analyzing previous hits." }, { "pl", "Maksymalizacja zysku ze strzału priorytetyzująca większe statki + analiza poprzednich trafień" } } }
 
             ];
         
