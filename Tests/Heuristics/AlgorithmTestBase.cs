@@ -1,5 +1,3 @@
-using Battleships.Common.GameClasses;
-using Battleships.Core.Enums;
 using Battleships.Core.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
@@ -12,19 +10,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Battleships.UnitTests.Heuristics
 {
-    public class VsRandomTests
+    public class AlgorithmTestBase
     {
-        private Mock<ILogger<CosmosDbService>> _dbLogger = new();
-        private Mock<ILogger<GameStateService>> _gameStateLogger = new();
-        private readonly GenerateMoveService _generateMoveService;
-        private readonly ShipLocationService _shipLocationService;
-        private readonly GameStateService _gameStateService;
-        private readonly CosmosDbService _cosmosDbService;
-        private Mock<IHttpContextAccessor> _httpContextAccessor = new();
-        private Mock<IHostEnvironment> _environment = new();
+        protected Mock<ILogger<CosmosDbService>> _dbLogger = new();
+        protected Mock<ILogger<GameStateService>> _gameStateLogger = new();
+        protected readonly GenerateMoveService _generateMoveService;
+        protected readonly ShipLocationService _shipLocationService;
+        protected readonly GameStateService _gameStateService;
+        protected readonly CosmosDbService _cosmosDbService;
+        protected Mock<IHttpContextAccessor> _httpContextAccessor = new();
+        protected Mock<IHostEnvironment> _environment = new();
 
-
-        public VsRandomTests()
+        public AlgorithmTestBase()
         {
             var services = new ServiceCollection();
             services.AddMemoryCache();
@@ -34,7 +31,7 @@ namespace Battleships.UnitTests.Heuristics
 
             CosmosClient client = new(
                "https://kalj-cosmos-db.documents.azure.com:443/",
-               "insertTokenHere"
+               "insertCosmosDbTokenHere"
                );
 
             CosmosDbSettings settings = new()
@@ -48,30 +45,6 @@ namespace Battleships.UnitTests.Heuristics
             _cosmosDbService = new CosmosDbService(_dbLogger.Object, settings, client);
             _gameStateService = new GameStateService(_httpContextAccessor.Object, _gameStateLogger.Object, memoryCache, _cosmosDbService, _environment.Object);
             _shipLocationService = new ShipLocationService(_gameStateService);
-        }
-
-        [Fact]
-        public void RandomVsLocationHeuristic()
-        {
-            _httpContextAccessor.SetupTestHttpContext();
-
-            var initialGameState = new GameState
-            {
-                PlayerAiType = AiType.HitHeuristic,
-                OpponentAiType = AiType.Random,
-                ShipsCanTouch = false,
-            };
-
-            var playerWins = TestHelper.RunSimulation(
-                initialGameState,
-                _gameStateService,
-                _generateMoveService,
-                _shipLocationService,
-                100);
-
-            Assert.True(true);
-        }
-
-        
+        }        
     }
 }

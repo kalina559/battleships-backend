@@ -1,5 +1,6 @@
 ﻿
 using Battleships.Common.GameClasses;
+using Battleships.Common.Helpers;
 
 namespace Battleships.AI.Strategies
 {
@@ -42,39 +43,21 @@ namespace Battleships.AI.Strategies
             return moves;
         }
 
-        private static bool IsNotAdjacentToSunkShip(int x, int y, List<Shot> previousShots, List<Ship> opponentShips)
+        private static bool IsAdjacentToSunkShip(int x, int y, List<Shot> previousShots, List<Ship> opponentShips)
         {
-            var adjacentOffsets = new (int dx, int dy)[]
-            {
-                (-1, -1), (-1, 0), (-1, 1),
-                (0, -1),          (0, 1),
-                (1, -1), (1, 0), (1, 1)
-            };
 
-            return adjacentOffsets.All(offset =>
-            {
-                var adjX = x + offset.dx;
-                var adjY = y + offset.dy;
+            var adjacentCells = GridHelper.GetAllAdjacentCells(x, y);
+            var sunkShips = opponentShips.Where(ship => ship.IsSunk);
 
-                if (adjX >= 0 && adjX < 10 && adjY >= 0 && adjY < 10)
-                {
-                    var adjacentShot = previousShots.FirstOrDefault(s => s.X == adjX && s.Y == adjY);
-                    if (adjacentShot != null && adjacentShot.IsHit)
-                    {
-                        // Check if the hit cell is part of a sunk ship
-                        return opponentShips.Any(ship =>
-                            ship.Coordinates.Any(coord => coord.X == adjX && coord.Y == adjY) &&
-                            ship.IsSunk);
-                    }
-                }
-
-                return true;
-            });
+            return adjacentCells.Any(
+                cell => sunkShips.Any(
+                    ship => ship.Coordinates.Any(
+                        coord => coord.X == cell.X && coord.Y == cell.Y)));
         }
 
         private static bool IsCellAvailable(List<Shot> previousShots, List<Ship> opponentShips, int x, int y)
         {
-            return IsNotAdjacentToSunkShip(x, y, previousShots, opponentShips) && !previousShots.Any(s => s.X == x && s.Y == y);
+            return !previousShots.Any(s => s.X == x && s.Y == y) && !IsAdjacentToSunkShip(x, y, previousShots, opponentShips) ;
         }
     }
 }
