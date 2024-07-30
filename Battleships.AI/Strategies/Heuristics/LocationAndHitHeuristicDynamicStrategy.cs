@@ -1,6 +1,5 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Common.Helpers;
-using System.Collections.Generic;
 
 namespace Battleships.AI.Strategies.Heuristics
 {
