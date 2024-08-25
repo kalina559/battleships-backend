@@ -1,4 +1,5 @@
-﻿using Battleships.Common.GameClasses;
+﻿using Battleships.Common.Enums;
+using Battleships.Common.GameClasses;
 using Battleships.Common.Helpers;
 using Battleships.Services.Interfaces;
 
@@ -6,37 +7,45 @@ namespace Battleships.Core.Services
 {
     public class ShipLocationService(IGameStateService gameStateService) : IShipLocationService
     {
+        private const double BiasProbability = 0.7;
+        private const int CornerBiasRange = 2;
+        private const int LeftBiasRange = 5;
+        private const int CenterBiasRange = 5;
+
         private static readonly Random _random = new();
 
-        public List<Ship> GenerateOpponentShips()
+        readonly List<int> DefaultShipSizes = [5, 4, 3, 2, 1];
+
+        public List<Ship> GenerateOpponentShips(List<int>? shipSizes = null, BiasType biasType = BiasType.None)
         {
-            var ships = new List<Ship>
+            var sizesToPlace = shipSizes ?? DefaultShipSizes;
+
+            var ships = new List<Ship>();
+
+            foreach (var size in sizesToPlace)
             {
-                new() { Size = 5 },
-                new() { Size = 4 },
-                new() { Size = 3 },
-                new() { Size = 2 },
-                new() { Size = 1 }
-            };
+                ships.Add(new Ship { Size = size });
+            }
 
             var grid = new bool[10, 10];
             var gameState = gameStateService.GetGameState();
 
             foreach (var ship in ships)
             {
-                var success = PlaceShip(ship, grid, gameState.ShipsCanTouch);
+                var success = PlaceShip(ship, grid, gameState.ShipsCanTouch, biasType);
 
                 if (!success)
                 {
                     // if we get 50 consecutive errors we just abandon this ship placing and try again
-                    return GenerateOpponentShips();
+                    return GenerateOpponentShips(sizesToPlace);
                 }
             }
 
+            GridHelper.PrintGrid(grid, 10, 10);    // just for debugging purposes
             return ships;
         }
 
-        private static bool PlaceShip(Ship ship, bool[,] grid, bool shipsCanTouch)
+        private static bool PlaceShip(Ship ship, bool[,] grid, bool shipsCanTouch, BiasType biasType)
         {
             int errorCount = 0;
             bool placed = false;
@@ -51,8 +60,8 @@ namespace Battleships.Core.Services
                 }
 
                 var direction = _random.Next(2); // 0: horizontal, 1: vertical
-                var startX = _random.Next(10);
-                var startY = _random.Next(10);
+                var startX = GetBiasedRandomPosition(10, biasType);
+                var startY = GetBiasedRandomPosition(10, biasType);
 
                 if (direction == 0 && startX + ship.Size <= 10)
                 {
@@ -99,6 +108,48 @@ namespace Battleships.Core.Services
             return true;
         }
 
+        private static int GetBiasedRandomPosition(int gridSize, BiasType biasType)
+        {
+            if (biasType != BiasType.None && _random.NextDouble() < BiasProbability)
+            {
+                switch (biasType)
+                {
+                    case BiasType.Corner:
+                        return GenerateRandomCornerPosition(gridSize);
+                    case BiasType.Left:
+                        return _random.Next(0, LeftBiasRange);
+                    case BiasType.Center:
+                        int centerStart = (gridSize / 2) - (CenterBiasRange / 2);
+                        return _random.Next(centerStart, centerStart + CenterBiasRange);
+                    default:
+                        return _random.Next(gridSize);  // just as fallback
+                }
+            }
+            else
+            {
+                return _random.Next(gridSize);
+            }
+        }
+
+        private static int GenerateRandomCornerPosition(int gridSize)
+        {
+            int corner = _random.Next(4);
+
+            switch (corner)
+            {
+                case 0: // top-left
+                    return _random.Next(0, CornerBiasRange);
+                case 1: // top-right
+                    return _random.Next(gridSize - CornerBiasRange, gridSize);
+                case 2: // bottom-left
+                    return _random.Next(0, CornerBiasRange);
+                case 3: // bottom-right
+                    return _random.Next(gridSize - CornerBiasRange, gridSize);
+                default:
+                    return _random.Next(gridSize);
+            }
+        }
+
         private static bool IsAreaClear(bool[,] grid, int startX, int startY, int size, bool horizontal, bool shipsCanTouch)
         {
             for (int i = 0; i < size; i++)
@@ -107,7 +158,7 @@ namespace Battleships.Core.Services
                 int y = horizontal ? startY : startY + i;
 
                 if (grid[x, y] || (!shipsCanTouch && IsAdjacentOccupied(grid, x, y)))
-                {                  
+                {
                     return false;
                 }
             }

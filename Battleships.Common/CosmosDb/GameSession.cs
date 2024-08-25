@@ -39,5 +39,8 @@ namespace Battleships.Common.CosmosDb
 
         [JsonProperty("opponentsShipsSunk")]
         public required int OpponentShipsSunk { get; set; }
+
+        [JsonProperty("testType")]
+        public required string TestType { get; set; }
     }
 }

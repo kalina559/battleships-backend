@@ -1,9 +1,9 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Core.Enums;
 
-namespace Battleships.UnitTests.Heuristics
+namespace Battleships.UnitTests.Heuristics.RegularRules
 {
-    public class LocationHeuristicTest : AlgorithmTestBase
+    public class HitAndLocationHeuristicTest : AlgorithmTestBase
     {
         private readonly int numberOfIterations = 0;
 
@@ -14,7 +14,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.Random,
                 ShipsCanTouch = false,
             };
@@ -36,7 +36,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.Random,
                 ShipsCanTouch = true,
             };
@@ -58,7 +58,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.RandomPlus,
                 ShipsCanTouch = false,
             };
@@ -80,9 +80,31 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.LocationHeuristic,
                 ShipsCanTouch = false,
+            };
+
+            var playerWins = TestHelper.RunSimulation(
+                initialGameState,
+                _gameStateService,
+                _generateMoveService,
+                _shipLocationService,
+                numberOfIterations);
+
+            Assert.True(true);
+        }
+
+        [Fact]
+        public void VsLocationHeuristicShipsCanTouch()
+        {
+            _httpContextAccessor.SetupTestHttpContext();
+
+            var initialGameState = new GameState
+            {
+                PlayerAiType = AiType.LocationAndHitHeuristic,
+                OpponentAiType = AiType.LocationHeuristic,
+                ShipsCanTouch = true,
             };
 
             var playerWins = TestHelper.RunSimulation(
@@ -102,7 +124,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.LocationHeuristicDynamic,
                 ShipsCanTouch = false,
             };
@@ -117,30 +139,6 @@ namespace Battleships.UnitTests.Heuristics
             Assert.True(true);
         }
 
-
-        [Fact]
-        public void VsLocationHeuristicExtendedShipsCanTouch()
-        {
-            _httpContextAccessor.SetupTestHttpContext();
-
-            var initialGameState = new GameState
-            {
-                PlayerAiType = AiType.LocationHeuristic,
-                OpponentAiType = AiType.LocationHeuristicDynamic,
-                ShipsCanTouch = true,
-            };
-
-            var playerWins = TestHelper.RunSimulation(
-                initialGameState,
-                _gameStateService,
-                _generateMoveService,
-                _shipLocationService,
-                numberOfIterations);
-
-            Assert.True(true);
-        }
-
-
         [Fact]
         public void VsHitHeuristicShipsCantTouch()
         {
@@ -148,7 +146,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -170,7 +168,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -192,7 +190,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -207,7 +205,6 @@ namespace Battleships.UnitTests.Heuristics
             Assert.True(true);
         }
 
-
         [Fact]
         public void VsLocationAndHitHeuristicShipsCanTouch()
         {
@@ -215,7 +212,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristic,
+                PlayerAiType = AiType.LocationAndHitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -230,48 +227,48 @@ namespace Battleships.UnitTests.Heuristics
             Assert.True(true);
         }
 
-        //[Fact]
-        //public void VsLocationAndHitHeuristicDynamicShipsCantTouch()
-        //{
-        //    _httpContextAccessor.SetupTestHttpContext();
+        [Fact]
+        public void VsLocationAndHitHeuristicDynamicShipsCantTouch()
+        {
+            _httpContextAccessor.SetupTestHttpContext();
 
-        //    var initialGameState = new GameState
-        //    {
-        //        PlayerAiType = AiType.LocationHeuristic,
-        //        OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
-        //        ShipsCanTouch = false,
-        //    };
+            var initialGameState = new GameState
+            {
+                PlayerAiType = AiType.LocationAndHitHeuristic,
+                OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
+                ShipsCanTouch = false,
+            };
 
-        //    var playerWins = TestHelper.RunSimulation(
-        //        initialGameState,
-        //        _gameStateService,
-        //        _generateMoveService,
-        //        _shipLocationService,
-        //        numberOfIterations);
+            var playerWins = TestHelper.RunSimulation(
+                initialGameState,
+                _gameStateService,
+                _generateMoveService,
+                _shipLocationService,
+                numberOfIterations);
 
-        //    Assert.True(true);
-        //}
+            Assert.True(true);
+        }
 
-        //[Fact]
-        //public void VsLocationAndHitHeuristicDynamicShipsCanTouch()
-        //{
-        //    _httpContextAccessor.SetupTestHttpContext();
+        [Fact]
+        public void VsLocationAndHitHeuristicDynamicShipsCanTouch()
+        {
+            _httpContextAccessor.SetupTestHttpContext();
 
-        //    var initialGameState = new GameState
-        //    {
-        //        PlayerAiType = AiType.LocationHeuristic,
-        //        OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
-        //        ShipsCanTouch = true,
-        //    };
+            var initialGameState = new GameState
+            {
+                PlayerAiType = AiType.LocationAndHitHeuristic,
+                OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
+                ShipsCanTouch = true,
+            };
 
-        //    var playerWins = TestHelper.RunSimulation(
-        //        initialGameState,
-        //        _gameStateService,
-        //        _generateMoveService,
-        //        _shipLocationService,
-        //        numberOfIterations);
+            var playerWins = TestHelper.RunSimulation(
+                initialGameState,
+                _gameStateService,
+                _generateMoveService,
+                _shipLocationService,
+                numberOfIterations);
 
-        //    Assert.True(true);
-        //}
+            Assert.True(true);
+        }
     }
 }

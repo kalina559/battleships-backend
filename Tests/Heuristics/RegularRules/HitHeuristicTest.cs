@@ -1,9 +1,9 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Core.Enums;
 
-namespace Battleships.UnitTests.Heuristics
+namespace Battleships.UnitTests.Heuristics.RegularRules
 {
-    public class LocationHeuristicDynamicTest : AlgorithmTestBase
+    public class HitHeuristicTest : AlgorithmTestBase
     {
         private readonly int numberOfIterations = 0;
 
@@ -14,7 +14,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.Random,
                 ShipsCanTouch = false,
             };
@@ -36,7 +36,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.Random,
                 ShipsCanTouch = true,
             };
@@ -58,7 +58,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.RandomPlus,
                 ShipsCanTouch = false,
             };
@@ -80,7 +80,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationHeuristic,
                 ShipsCanTouch = false,
             };
@@ -102,7 +102,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationHeuristic,
                 ShipsCanTouch = true,
             };
@@ -124,7 +124,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationHeuristicDynamic,
                 ShipsCanTouch = false,
             };
@@ -146,7 +146,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -168,7 +168,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -190,7 +190,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -212,7 +212,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -234,7 +234,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
                 ShipsCanTouch = false,
             };
@@ -256,7 +256,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.LocationHeuristicDynamic,
+                PlayerAiType = AiType.HitHeuristic,
                 OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
                 ShipsCanTouch = true,
             };

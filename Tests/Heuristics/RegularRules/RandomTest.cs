@@ -1,55 +1,11 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Core.Enums;
 
-namespace Battleships.UnitTests.Heuristics
+namespace Battleships.UnitTests.Heuristics.RegularRules
 {
-    public class HitHeuristicTest : AlgorithmTestBase
+    public class RandomTest : AlgorithmTestBase
     {
         private readonly int numberOfIterations = 0;
-
-        [Fact]
-        public void VsRandomShipsCantTouch()
-        {
-            _httpContextAccessor.SetupTestHttpContext();
-
-            var initialGameState = new GameState
-            {
-                PlayerAiType = AiType.HitHeuristic,
-                OpponentAiType = AiType.Random,
-                ShipsCanTouch = false,
-            };
-
-            var playerWins = TestHelper.RunSimulation(
-                initialGameState,
-                _gameStateService,
-                _generateMoveService,
-                _shipLocationService,
-                numberOfIterations);
-
-            Assert.True(true);
-        }
-
-        [Fact]
-        public void VsRandomShipsCanTouch()
-        {
-            _httpContextAccessor.SetupTestHttpContext();
-
-            var initialGameState = new GameState
-            {
-                PlayerAiType = AiType.HitHeuristic,
-                OpponentAiType = AiType.Random,
-                ShipsCanTouch = true,
-            };
-
-            var playerWins = TestHelper.RunSimulation(
-                initialGameState,
-                _gameStateService,
-                _generateMoveService,
-                _shipLocationService,
-                numberOfIterations);
-
-            Assert.True(true);
-        }
 
         [Fact]
         public void VsRandomPlusShipsCantTouch()
@@ -58,7 +14,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.RandomPlus,
                 ShipsCanTouch = false,
             };
@@ -80,7 +36,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationHeuristic,
                 ShipsCanTouch = false,
             };
@@ -102,7 +58,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationHeuristic,
                 ShipsCanTouch = true,
             };
@@ -124,9 +80,31 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationHeuristicDynamic,
                 ShipsCanTouch = false,
+            };
+
+            var playerWins = TestHelper.RunSimulation(
+                initialGameState,
+                _gameStateService,
+                _generateMoveService,
+                _shipLocationService,
+                numberOfIterations);
+
+            Assert.True(true);
+        }
+
+        [Fact]
+        public void VsLocationHeuristicExtendedShipsCanTouch()
+        {
+            _httpContextAccessor.SetupTestHttpContext();
+
+            var initialGameState = new GameState
+            {
+                PlayerAiType = AiType.Random,
+                OpponentAiType = AiType.LocationHeuristicDynamic,
+                ShipsCanTouch = true,
             };
 
             var playerWins = TestHelper.RunSimulation(
@@ -146,7 +124,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -168,7 +146,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.HitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -190,7 +168,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = false,
             };
@@ -212,7 +190,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationAndHitHeuristic,
                 ShipsCanTouch = true,
             };
@@ -234,7 +212,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
                 ShipsCanTouch = false,
             };
@@ -256,7 +234,7 @@ namespace Battleships.UnitTests.Heuristics
 
             var initialGameState = new GameState
             {
-                PlayerAiType = AiType.HitHeuristic,
+                PlayerAiType = AiType.Random,
                 OpponentAiType = AiType.LocationAndHitHeuristicDynamic,
                 ShipsCanTouch = true,
             };

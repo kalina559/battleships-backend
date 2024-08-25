@@ -102,7 +102,8 @@ namespace Battleships.Core.Services
                     PlayersShipsSunk = gameState.UserShips.Where(x => x.IsSunk).Count(),
                     OpponentMovesCount = gameState.OpponentShots.Count(),
                     PlayerMovesCount = gameState.PlayerShots.Count(),
-                    PlayerWon = playerWon
+                    PlayerWon = playerWon,
+                    TestType = gameState.TestType
                 };
 
                 cosmosDbService.AddGameSessionAsync(gameSession, testMode);

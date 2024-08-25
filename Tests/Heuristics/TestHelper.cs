@@ -1,4 +1,5 @@
-﻿using Battleships.Common.GameClasses;
+﻿using Battleships.Common.Enums;
+using Battleships.Common.GameClasses;
 using Battleships.Core.Enums;
 using Battleships.Core.Services;
 using Battleships.Services.Interfaces;
@@ -29,7 +30,9 @@ namespace Battleships.UnitTests.Heuristics
             GameStateService gameStateService,
             GenerateMoveService generateMoveService,
             ShipLocationService shipLocationService,
-            int runs
+            int runs,
+            List<int>? shipSizes = null,
+            BiasType biasType = BiasType.None
             )
         {
             int playerWins = 0;
@@ -37,7 +40,7 @@ namespace Battleships.UnitTests.Heuristics
             for (int i = 0; i< runs; i++)
             {
                 using var gameStateClone = initialGameState.Clone();
-                Play(gameStateClone, gameStateService, generateMoveService, shipLocationService, ref playerWins);
+                Play(gameStateClone, gameStateService, generateMoveService, shipLocationService, ref playerWins, biasType, shipSizes);
             }
 
             return playerWins;
@@ -48,11 +51,13 @@ namespace Battleships.UnitTests.Heuristics
             GameStateService gameStateService,
             GenerateMoveService generateMoveService,
             ShipLocationService shipLocationService,
-            ref int playerWins
+            ref int playerWins,
+            BiasType biasType,
+            List<int>? shipSizes = null     
             )
         {
-            initialGameState.OpponentShips = shipLocationService.GenerateOpponentShips();
-            initialGameState.UserShips = shipLocationService.GenerateOpponentShips();
+            initialGameState.OpponentShips = shipLocationService.GenerateOpponentShips(shipSizes, biasType);
+            initialGameState.UserShips = shipLocationService.GenerateOpponentShips(shipSizes);
             gameStateService.SaveGameState(initialGameState);
 
             bool gameIsFinished = false;

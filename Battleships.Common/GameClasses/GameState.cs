@@ -11,6 +11,7 @@ namespace Battleships.Common.GameClasses
         public AiType? PlayerAiType { get; set; } = null;
         public AiType OpponentAiType { get; set; }
         public bool ShipsCanTouch { get; set; }
+        public string TestType { get; set; }
 
         public GameState Clone()
         {
@@ -22,8 +23,8 @@ namespace Battleships.Common.GameClasses
                 OpponentShips = this.OpponentShips,
                 OpponentShots = this.OpponentShots,
                 PlayerShots = this.PlayerShots,
-                UserShips = this.UserShips
-                
+                UserShips = this.UserShips,
+                TestType = this.TestType
             };
         }
 

@@ -1,9 +1,9 @@
 ﻿using Battleships.Common.GameClasses;
 using Battleships.Core.Enums;
 
-namespace Battleships.UnitTests.Heuristics
+namespace Battleships.UnitTests.Heuristics.RegularRules
 {
-    public class RandomPlusTest: AlgorithmTestBase
+    public class RandomPlusTest : AlgorithmTestBase
     {
         private readonly int numberOfIterations = 0;
 
@@ -49,7 +49,7 @@ namespace Battleships.UnitTests.Heuristics
                 numberOfIterations);
 
             Assert.True(true);
-        }        
+        }
 
         [Fact]
         public void VsLocationHeuristicExtendedShipsCantTouch()
@@ -71,7 +71,7 @@ namespace Battleships.UnitTests.Heuristics
                 numberOfIterations);
 
             Assert.True(true);
-        }        
+        }
 
         [Fact]
         public void VsHitHeuristicShipsCantTouch()
@@ -93,7 +93,7 @@ namespace Battleships.UnitTests.Heuristics
                 numberOfIterations);
 
             Assert.True(true);
-        }        
+        }
 
         [Fact]
         public void VsLocationAndHitHeuristicShipsCantTouch()
@@ -115,7 +115,7 @@ namespace Battleships.UnitTests.Heuristics
                 numberOfIterations);
 
             Assert.True(true);
-        }        
+        }
 
         [Fact]
         public void VsLocationAndHitHeuristicDynamicShipsCantTouch()
@@ -137,6 +137,6 @@ namespace Battleships.UnitTests.Heuristics
                 numberOfIterations);
 
             Assert.True(true);
-        }        
+        }
     }
 }
