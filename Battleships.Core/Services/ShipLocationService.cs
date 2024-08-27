@@ -7,10 +7,10 @@ namespace Battleships.Core.Services
 {
     public class ShipLocationService(IGameStateService gameStateService) : IShipLocationService
     {
-        private const double BiasProbability = 0.7;
-        private const int CornerBiasRange = 2;
+        private const double BiasProbability = 0.8;
+        private const int CornerBiasRange = 3;
         private const int LeftBiasRange = 5;
-        private const int CenterBiasRange = 5;
+        private const int CenterBiasRange = 6;
 
         private static readonly Random _random = new();
 
@@ -60,8 +60,8 @@ namespace Battleships.Core.Services
                 }
 
                 var direction = _random.Next(2); // 0: horizontal, 1: vertical
-                var startX = GetBiasedRandomPosition(10, biasType);
-                var startY = GetBiasedRandomPosition(10, biasType);
+
+                var (startX, startY) = GetBiasedRandomPosition(10, ship.Size, biasType);
 
                 if (direction == 0 && startX + ship.Size <= 10)
                 {
@@ -108,45 +108,45 @@ namespace Battleships.Core.Services
             return true;
         }
 
-        private static int GetBiasedRandomPosition(int gridSize, BiasType biasType)
+        private static (int X, int Y) GetBiasedRandomPosition(int gridSize, int shipSize, BiasType biasType)
         {
             if (biasType != BiasType.None && _random.NextDouble() < BiasProbability)
             {
                 switch (biasType)
                 {
                     case BiasType.Corner:
-                        return GenerateRandomCornerPosition(gridSize);
+                        return GenerateRandomCornerPosition(gridSize, shipSize);
                     case BiasType.Left:
-                        return _random.Next(0, LeftBiasRange);
+                        return (_random.Next(0, LeftBiasRange), _random.Next(gridSize));
                     case BiasType.Center:
                         int centerStart = (gridSize / 2) - (CenterBiasRange / 2);
-                        return _random.Next(centerStart, centerStart + CenterBiasRange);
+                        return (_random.Next(centerStart, centerStart + CenterBiasRange), _random.Next(centerStart, centerStart + CenterBiasRange));
                     default:
-                        return _random.Next(gridSize);  // just as fallback
+                        return (_random.Next(gridSize), _random.Next(gridSize));  // just as fallback
                 }
             }
             else
             {
-                return _random.Next(gridSize);
+                return (_random.Next(gridSize), _random.Next(gridSize));
             }
         }
 
-        private static int GenerateRandomCornerPosition(int gridSize)
+        private static (int X, int Y) GenerateRandomCornerPosition(int gridSize, int shipSize)
         {
             int corner = _random.Next(4);
 
             switch (corner)
             {
                 case 0: // top-left
-                    return _random.Next(0, CornerBiasRange);
+                    return (_random.Next(0, CornerBiasRange), _random.Next(0, CornerBiasRange));
                 case 1: // top-right
-                    return _random.Next(gridSize - CornerBiasRange, gridSize);
+                    return (_random.Next(gridSize - shipSize - CornerBiasRange, gridSize), _random.Next(0, CornerBiasRange));
                 case 2: // bottom-left
-                    return _random.Next(0, CornerBiasRange);
+                    return (_random.Next(0, CornerBiasRange), _random.Next(gridSize - shipSize - CornerBiasRange, gridSize));
                 case 3: // bottom-right
-                    return _random.Next(gridSize - CornerBiasRange, gridSize);
+                    return (_random.Next(gridSize - shipSize - CornerBiasRange, gridSize), _random.Next(gridSize - shipSize - CornerBiasRange, gridSize));
                 default:
-                    return _random.Next(gridSize);
+                    return (_random.Next(gridSize), _random.Next(gridSize));
             }
         }
 

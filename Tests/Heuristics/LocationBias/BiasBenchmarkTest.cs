@@ -24,7 +24,7 @@ namespace Battleships.UnitTests.Heuristics.LocationBias
                     PlayerAiType = aiTypes[i],
                     OpponentAiType = aiTypes[i],
                     ShipsCanTouch = false,
-                    TestType = "BiasBenchmark"
+                    TestType = "BiasBenchmarkV2"
                 };
 
                 matchupCount++;
@@ -59,7 +59,7 @@ namespace Battleships.UnitTests.Heuristics.LocationBias
                     PlayerAiType = filteredAiTypes[i],
                     OpponentAiType = filteredAiTypes[i],
                     ShipsCanTouch = true,
-                    TestType = "BiasBenchmark"
+                    TestType = "BiasBenchmarkV2"
                 };
 
                 matchupCount++;

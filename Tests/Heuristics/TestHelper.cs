@@ -62,7 +62,7 @@ namespace Battleships.UnitTests.Heuristics
 
             bool gameIsFinished = false;
             int turnNumber = 1;
-            int whoStarts = new Random().Next(0, 1);    // 0 - opponent has the first move, 1 - player has the first move
+            int whoStarts = new Random().Next(0, 2);    // 0 - opponent has the first move, 1 - player has the first move
 
             while (!gameIsFinished)
             {

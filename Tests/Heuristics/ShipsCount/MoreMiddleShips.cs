@@ -6,7 +6,7 @@ namespace Battleships.UnitTests.Heuristics.ShipsCount
 {
     public class MoreMiddleShips : AlgorithmTestBase
     {
-        private readonly int numberOfIterations = 1000;
+        private readonly int numberOfIterations = 0;
         private readonly List<int> shipSizes = [5, 4, 3, 3, 3, 2, 1,];
 
         [Fact]

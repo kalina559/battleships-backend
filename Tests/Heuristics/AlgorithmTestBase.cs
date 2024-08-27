@@ -31,7 +31,7 @@ namespace Battleships.UnitTests.Heuristics
 
             CosmosClient client = new(
                "https://kalj-cosmos-db.documents.azure.com:443/",
-               "insertCosmosDbTokenHere"
+               ""
                );
 
             CosmosDbSettings settings = new()
